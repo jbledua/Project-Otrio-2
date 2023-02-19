@@ -158,6 +158,33 @@ class PlayState extends FlxState
 		{
 			this.logArray3D(this.board.readBoard());
 		}
+
+		if (FlxG.keys.justPressed.NUMPADSEVEN)
+			Log.trace("[0][0]:" + this.board.readSlotNSize(0));
+
+		if (FlxG.keys.justPressed.NUMPADEIGHT)
+			Log.trace("[0][1]:" + this.board.readSlotNSize(1));
+
+		if (FlxG.keys.justPressed.NUMPADNINE)
+			Log.trace("[0][2]:" + this.board.readSlotNSize(3));
+
+		if (FlxG.keys.justPressed.NUMPADFOUR)
+			Log.trace("[1][0]:" + this.board.readSlotNSize(4));
+
+		if (FlxG.keys.justPressed.NUMPADFIVE)
+			Log.trace("[1][1]:" + this.board.readSlotNSize(5));
+
+		if (FlxG.keys.justPressed.NUMPADSIX)
+			Log.trace("[1][2]:" + this.board.readSlotNSize(6));
+
+		if (FlxG.keys.justPressed.NUMPADONE)
+			Log.trace("[2][0]:" + this.board.readSlotNSize(7));
+
+		if (FlxG.keys.justPressed.NUMPADTWO)
+			Log.trace("[2][1]:" + this.board.readSlotNSize(8));
+
+		if (FlxG.keys.justPressed.NUMPADTHREE)
+			Log.trace("[2][2]:" + this.board.readSlotNSize(9));
 	}
 
 	public function logArray3D(_array:Array<Array<Array<Int>>>)

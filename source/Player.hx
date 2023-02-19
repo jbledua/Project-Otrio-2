@@ -152,6 +152,17 @@ class Player extends FlxSprite
 				this.playerSlots.members[2].x += this.width / 3;
 				this.playerSlots.members[2].y = this.getCenter().y - this.playerSlots.members[2].height / 2;
 		} // End Switch
+		this.playerSlots.members[0].setColors(this.colorLight, this.colorPrimary, this.colorDark, this.colorBackground);
+		this.playerSlots.members[1].setColors(this.colorLight, this.colorPrimary, this.colorDark, this.colorBackground);
+		this.playerSlots.members[2].setColors(this.colorLight, this.colorPrimary, this.colorDark, this.colorBackground);
+
+		this.playerSlots.members[0].setPieces(this.pieces);
+		this.playerSlots.members[1].setPieces(this.pieces);
+		this.playerSlots.members[2].setPieces(this.pieces);
+
+		this.playerSlots.members[0].setSlots(this.slots);
+		this.playerSlots.members[1].setSlots(this.slots);
+		this.playerSlots.members[2].setSlots(this.slots);
 
 		// Add Slots to Global list
 		this.slots.add(playerSlots.members[0]);
@@ -162,117 +173,122 @@ class Player extends FlxSprite
 	public function createPieces()
 	{
 		// This function could be impoved using for loops but it works for now
+		this.playerSlots.members[0].createPieces();
+		this.playerSlots.members[1].createPieces();
+		this.playerSlots.members[2].createPieces();
+		/*
+			// Instantiate pieces
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
 
-		// Instantiate pieces
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
 
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
+			this.playerPieces.add(new Piece());
 
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
-		this.playerPieces.add(new Piece());
+			// Set Pieces Sizes
+			this.playerPieces.members[0].setPiecesSize(Piece.LARGE);
+			this.playerPieces.members[3].setPiecesSize(Piece.MEDIUM);
+			this.playerPieces.members[6].setPiecesSize(Piece.SMALL);
 
-		// Set Pieces Sizes
-		this.playerPieces.members[0].setPiecesSize(Piece.LARGE);
-		this.playerPieces.members[3].setPiecesSize(Piece.MEDIUM);
-		this.playerPieces.members[6].setPiecesSize(Piece.SMALL);
+			this.playerPieces.members[1].setPiecesSize(Piece.LARGE);
+			this.playerPieces.members[4].setPiecesSize(Piece.MEDIUM);
+			this.playerPieces.members[7].setPiecesSize(Piece.SMALL);
 
-		this.playerPieces.members[1].setPiecesSize(Piece.LARGE);
-		this.playerPieces.members[4].setPiecesSize(Piece.MEDIUM);
-		this.playerPieces.members[7].setPiecesSize(Piece.SMALL);
+			this.playerPieces.members[2].setPiecesSize(Piece.LARGE);
+			this.playerPieces.members[5].setPiecesSize(Piece.MEDIUM);
+			this.playerPieces.members[8].setPiecesSize(Piece.SMALL);
 
-		this.playerPieces.members[2].setPiecesSize(Piece.LARGE);
-		this.playerPieces.members[5].setPiecesSize(Piece.MEDIUM);
-		this.playerPieces.members[8].setPiecesSize(Piece.SMALL);
+			// Set Pieces Sizes
+			this.playerPieces.members[0].setPiecesColor(this.colorDark);
+			this.playerPieces.members[1].setPiecesColor(this.colorDark);
+			this.playerPieces.members[2].setPiecesColor(this.colorDark);
 
-		// Set Pieces Sizes
-		this.playerPieces.members[0].setPiecesColor(this.colorDark);
-		this.playerPieces.members[1].setPiecesColor(this.colorDark);
-		this.playerPieces.members[2].setPiecesColor(this.colorDark);
+			this.playerPieces.members[3].setPiecesColor(this.colorPrimary);
+			this.playerPieces.members[4].setPiecesColor(this.colorPrimary);
+			this.playerPieces.members[5].setPiecesColor(this.colorPrimary);
 
-		this.playerPieces.members[3].setPiecesColor(this.colorPrimary);
-		this.playerPieces.members[4].setPiecesColor(this.colorPrimary);
-		this.playerPieces.members[5].setPiecesColor(this.colorPrimary);
+			this.playerPieces.members[6].setPiecesColor(this.colorLight);
+			this.playerPieces.members[7].setPiecesColor(this.colorLight);
+			this.playerPieces.members[8].setPiecesColor(this.colorLight);
 
-		this.playerPieces.members[6].setPiecesColor(this.colorLight);
-		this.playerPieces.members[7].setPiecesColor(this.colorLight);
-		this.playerPieces.members[8].setPiecesColor(this.colorLight);
+			// Create Pieces
+			this.playerPieces.members[0].create();
+			this.playerPieces.members[1].create();
+			this.playerPieces.members[2].create();
 
-		// Create Pieces
-		this.playerPieces.members[0].create();
-		this.playerPieces.members[1].create();
-		this.playerPieces.members[2].create();
+			this.playerPieces.members[3].create();
+			this.playerPieces.members[4].create();
+			this.playerPieces.members[5].create();
 
-		this.playerPieces.members[3].create();
-		this.playerPieces.members[4].create();
-		this.playerPieces.members[5].create();
+			this.playerPieces.members[6].create();
+			this.playerPieces.members[7].create();
+			this.playerPieces.members[8].create();
 
-		this.playerPieces.members[6].create();
-		this.playerPieces.members[7].create();
-		this.playerPieces.members[8].create();
+			// Start Pieces in the Center
+			this.playerPieces.members[0].screenCenter();
+			this.playerPieces.members[1].screenCenter();
+			this.playerPieces.members[2].screenCenter();
 
-		// Start Pieces in the Center
-		this.playerPieces.members[0].screenCenter();
-		this.playerPieces.members[1].screenCenter();
-		this.playerPieces.members[2].screenCenter();
+			this.playerPieces.members[3].screenCenter();
+			this.playerPieces.members[4].screenCenter();
+			this.playerPieces.members[5].screenCenter();
 
-		this.playerPieces.members[3].screenCenter();
-		this.playerPieces.members[4].screenCenter();
-		this.playerPieces.members[5].screenCenter();
+			this.playerPieces.members[6].screenCenter();
+			this.playerPieces.members[7].screenCenter();
+			this.playerPieces.members[8].screenCenter();
 
-		this.playerPieces.members[6].screenCenter();
-		this.playerPieces.members[7].screenCenter();
-		this.playerPieces.members[8].screenCenter();
+			// Set slots
+			this.playerPieces.members[0].setSlots(this.slots);
+			this.playerPieces.members[1].setSlots(this.slots);
+			this.playerPieces.members[2].setSlots(this.slots);
+			this.playerPieces.members[3].setSlots(this.slots);
+			this.playerPieces.members[4].setSlots(this.slots);
+			this.playerPieces.members[5].setSlots(this.slots);
+			this.playerPieces.members[6].setSlots(this.slots);
+			this.playerPieces.members[7].setSlots(this.slots);
+			this.playerPieces.members[8].setSlots(this.slots);
 
-		// Set slots
-		this.playerPieces.members[0].setSlots(this.slots);
-		this.playerPieces.members[1].setSlots(this.slots);
-		this.playerPieces.members[2].setSlots(this.slots);
-		this.playerPieces.members[3].setSlots(this.slots);
-		this.playerPieces.members[4].setSlots(this.slots);
-		this.playerPieces.members[5].setSlots(this.slots);
-		this.playerPieces.members[6].setSlots(this.slots);
-		this.playerPieces.members[7].setSlots(this.slots);
-		this.playerPieces.members[8].setSlots(this.slots);
+			// Set Parent
+			// this.playerPieces.members[0].setParent(this);
+			// this.playerPieces.members[1].setParent(this);
+			// this.playerPieces.members[2].setParent(this);
+			// this.playerPieces.members[3].setParent(this);
+			// this.playerPieces.members[4].setParent(this);
+			// this.playerPieces.members[5].setParent(this);
+			// this.playerPieces.members[6].setParent(this);
+			// this.playerPieces.members[7].setParent(this);
+			// this.playerPieces.members[8].setParent(this);
 
-		// Set Parent
-		this.playerPieces.members[0].setParent(this);
-		this.playerPieces.members[1].setParent(this);
-		this.playerPieces.members[2].setParent(this);
-		this.playerPieces.members[3].setParent(this);
-		this.playerPieces.members[4].setParent(this);
-		this.playerPieces.members[5].setParent(this);
-		this.playerPieces.members[6].setParent(this);
-		this.playerPieces.members[7].setParent(this);
-		this.playerPieces.members[8].setParent(this);
+			// Add Piece to globle list
+			this.pieces.add(this.playerPieces.members[0]);
+			this.pieces.add(this.playerPieces.members[1]);
+			this.pieces.add(this.playerPieces.members[2]);
+			this.pieces.add(this.playerPieces.members[3]);
+			this.pieces.add(this.playerPieces.members[4]);
+			this.pieces.add(this.playerPieces.members[5]);
+			this.pieces.add(this.playerPieces.members[6]);
+			this.pieces.add(this.playerPieces.members[7]);
+			this.pieces.add(this.playerPieces.members[8]);
 
-		// Add Piece to globle list
-		this.pieces.add(this.playerPieces.members[0]);
-		this.pieces.add(this.playerPieces.members[1]);
-		this.pieces.add(this.playerPieces.members[2]);
-		this.pieces.add(this.playerPieces.members[3]);
-		this.pieces.add(this.playerPieces.members[4]);
-		this.pieces.add(this.playerPieces.members[5]);
-		this.pieces.add(this.playerPieces.members[6]);
-		this.pieces.add(this.playerPieces.members[7]);
-		this.pieces.add(this.playerPieces.members[8]);
+			// Move Piece to Location
+			this.playerPieces.members[0].moveTo(this.playerSlots.members[0].getCenter());
+			this.playerPieces.members[3].moveTo(this.playerSlots.members[0].getCenter());
+			this.playerPieces.members[6].moveTo(this.playerSlots.members[0].getCenter());
 
-		// Move Piece to Location
-		this.playerPieces.members[0].moveTo(this.playerSlots.members[0].getCenter());
-		this.playerPieces.members[3].moveTo(this.playerSlots.members[0].getCenter());
-		this.playerPieces.members[6].moveTo(this.playerSlots.members[0].getCenter());
+			this.playerPieces.members[1].moveTo(this.playerSlots.members[1].getCenter());
+			this.playerPieces.members[4].moveTo(this.playerSlots.members[1].getCenter());
+			this.playerPieces.members[7].moveTo(this.playerSlots.members[1].getCenter());
 
-		this.playerPieces.members[1].moveTo(this.playerSlots.members[1].getCenter());
-		this.playerPieces.members[4].moveTo(this.playerSlots.members[1].getCenter());
-		this.playerPieces.members[7].moveTo(this.playerSlots.members[1].getCenter());
+			this.playerPieces.members[2].moveTo(this.playerSlots.members[2].getCenter());
+			this.playerPieces.members[5].moveTo(this.playerSlots.members[2].getCenter());
+			this.playerPieces.members[8].moveTo(this.playerSlots.members[2].getCenter());
 
-		this.playerPieces.members[2].moveTo(this.playerSlots.members[2].getCenter());
-		this.playerPieces.members[5].moveTo(this.playerSlots.members[2].getCenter());
-		this.playerPieces.members[8].moveTo(this.playerSlots.members[2].getCenter());
+			// */
 	} // End createPieces
 
 	override public function update(elapsed:Float)

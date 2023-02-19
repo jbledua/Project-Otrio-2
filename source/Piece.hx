@@ -9,7 +9,7 @@ import haxe.Log;
 class Piece extends FlxSprite
 {
 	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
-	private var parent:Player;
+	private var parent:Slot;
 
 	private var pieceSize:Int = 1;
 	private var pieceColor:FlxColor = FlxColor.WHITE;
@@ -27,7 +27,7 @@ class Piece extends FlxSprite
 		super(_x, _y);
 	}
 
-	public function setParent(_parent:Player)
+	public function setParent(_parent:Slot)
 	{
 		this.parent = _parent;
 	}
@@ -115,7 +115,15 @@ class Piece extends FlxSprite
 		{
 			if (this.overlaps(this.slots.members[i]))
 			{
-				this.moveTo(this.slots.members[i].getCenter()); // Log.trace("On slot");
+				// Check if the slot has space for the piece
+				if (this.slots.members[i].hasSpace(this.getPiecesSize()))
+				{
+					this.moveTo(this.slots.members[i].getCenter());
+				}
+				else
+				{
+					Log.trace("Error: Slot is full");
+				}
 			}
 		}
 	}

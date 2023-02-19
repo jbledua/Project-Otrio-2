@@ -7,7 +7,35 @@ import haxe.Log;
 
 class Slot extends FlxSprite
 {
-	private var pieces:FlxTypedGroup<Piece>;
+	// Global Groups
+	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
+	private var pieces:FlxTypedGroup<Piece>; // Global Group of all Pieces
+
+	// Local Pieces
+	private var slotPieces:FlxTypedGroup<Piece>; // Local Group of Pieces that are created by the slot
+
+	private var colorLight:FlxColor = FlxColor.fromHSB(0, 0, 1, 1);
+	private var colorPrimary:FlxColor = FlxColor.fromHSB(0, 0, 0.75, 1);
+	private var colorDark:FlxColor = FlxColor.fromHSB(0, 0, 0.5, 1);
+	private var colorBackground:FlxColor = FlxColor.fromHSB(0, 0, 0.25, 1);
+
+	public function setSlots(_slots:FlxTypedGroup<Slot>)
+	{
+		this.slots = _slots;
+	}
+
+	public function setPieces(_pieces:FlxTypedGroup<Piece>)
+	{
+		this.pieces = _pieces;
+	}
+
+	public function setColors(_colorLight:FlxColor, _colorPrimary:FlxColor, _colorDark:FlxColor, _colorBackground:FlxColor)
+	{
+		this.colorLight = _colorLight;
+		this.colorPrimary = _colorPrimary;
+		this.colorDark = _colorDark;
+		this.colorBackground = _colorBackground;
+	}
 
 	// Constructor
 	public function new(_x:Float = 0, _y:Float = 0)
@@ -15,11 +43,6 @@ class Slot extends FlxSprite
 		Log.trace("In Slot X: " + _x + ", Y: " + _y);
 
 		super(_x, _y);
-	}
-
-	public function setPieces(_pieces:FlxTypedGroup<Piece>)
-	{
-		this.pieces = _pieces;
 	}
 
 	public function getCenter()
@@ -38,23 +61,117 @@ class Slot extends FlxSprite
 		makeGraphic(_width, _height, FlxColor.CYAN);
 	}
 
-	override public function update(elapsed:Float)
-	{
-		super.update(elapsed);
-	}
-
 	public function readPieces():FlxTypedGroup<Piece>
 	{
 		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
 
-		for (i in 0...this.pieces.length)
+		if (this.pieces != null)
 		{
-			if (this.overlaps(this.pieces.members[i]))
+			for (i in 0...this.pieces.length)
 			{
-				_pieces.add(this.pieces.members[i]);
+				if (this.overlaps(this.pieces.members[i]))
+				{
+					_pieces.add(this.pieces.members[i]);
+				}
 			}
+		}
+		else
+		{
+			Log.trace("Error: can not Read Slot. Global Pieces Not Defined");
 		}
 
 		return _pieces;
+	} // End readPieces
+
+	public function hasSpace(_size:Int):Bool
+	{
+		var _space:Bool = true;
+		var _foundCount:Int = 0;
+		var _onPieces:FlxTypedGroup<Piece> = this.readPieces();
+
+		for (i in 0..._onPieces.length)
+		{
+			if (_onPieces.members[i].getPiecesSize() == _size)
+			{
+				_foundCount++;
+			}
+		}
+
+		if (_foundCount > 1)
+		{
+			_space = false;
+		}
+		return _space;
+	}
+
+	public function createPieces()
+	{
+		this.slotPieces = new FlxTypedGroup<Piece>(3);
+
+		this.slotPieces.add(new Piece());
+		this.slotPieces.add(new Piece());
+		this.slotPieces.add(new Piece());
+
+		this.slotPieces.members[0].setPiecesSize(Piece.SMALL);
+		this.slotPieces.members[1].setPiecesSize(Piece.MEDIUM);
+		this.slotPieces.members[2].setPiecesSize(Piece.LARGE);
+
+		this.slotPieces.members[0].setPiecesColor(this.colorLight);
+		this.slotPieces.members[1].setPiecesColor(this.colorPrimary);
+		this.slotPieces.members[2].setPiecesColor(this.colorDark);
+
+		this.slotPieces.members[0].create();
+		this.slotPieces.members[1].create();
+		this.slotPieces.members[2].create();
+
+		this.slotPieces.members[0].screenCenter();
+		this.slotPieces.members[1].screenCenter();
+		this.slotPieces.members[2].screenCenter();
+
+		this.slotPieces.members[0].setSlots(this.slots);
+		this.slotPieces.members[1].setSlots(this.slots);
+		this.slotPieces.members[2].setSlots(this.slots);
+
+		this.slotPieces.members[0].setParent(this);
+		this.slotPieces.members[1].setParent(this);
+		this.slotPieces.members[2].setParent(this);
+
+		this.pieces.add(this.slotPieces.members[2]);
+		this.pieces.add(this.slotPieces.members[1]);
+		this.pieces.add(this.slotPieces.members[0]);
+
+		this.slotPieces.members[0].moveTo(this.getCenter());
+		this.slotPieces.members[1].moveTo(this.getCenter());
+		this.slotPieces.members[2].moveTo(this.getCenter());
+	}
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (FlxG.mouse.justPressed)
+		{
+			var i = this.slotPieces.length - 1;
+			while (i >= 0)
+			{
+				if (FlxG.mouse.overlaps(this.slotPieces.members[i]))
+				{
+					this.slotPieces.members[i].onClicked();
+					break;
+				}
+				i--;
+			} // End For loop
+		}
+
+		if (FlxG.mouse.justReleased)
+		{
+			for (j in 0...this.slotPieces.length)
+			{
+				if (FlxG.mouse.overlaps(this.slotPieces.members[j]))
+				{
+					this.slotPieces.members[j].onDroped();
+				}
+			} // End For loop
+		}
 	}
 }

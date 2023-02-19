@@ -52,6 +52,22 @@ class Board extends FlxSprite
 		this.boardSlots.add(new Slot());
 		this.boardSlots.add(new Slot());
 
+		// Set Pieces
+		// Top Row
+		this.boardSlots.members[0].setPieces(this.pieces);
+		this.boardSlots.members[1].setPieces(this.pieces);
+		this.boardSlots.members[2].setPieces(this.pieces);
+
+		// Middle Row
+		this.boardSlots.members[3].setPieces(this.pieces);
+		this.boardSlots.members[4].setPieces(this.pieces);
+		this.boardSlots.members[5].setPieces(this.pieces);
+
+		// Bottom Row
+		this.boardSlots.members[6].setPieces(this.pieces);
+		this.boardSlots.members[7].setPieces(this.pieces);
+		this.boardSlots.members[8].setPieces(this.pieces);
+
 		// Create Slots
 		// Top Row
 		this.boardSlots.members[0].create();
@@ -107,6 +123,24 @@ class Board extends FlxSprite
 		this.slots.add(this.boardSlots.members[7]);
 		this.slots.add(this.boardSlots.members[8]);
 	} // End createSlots
+
+	public function readSlotNSize(_n:Int):Array<Int>
+	{
+		var _pieceSize:Array<Int> = [];
+
+		if (this.boardSlots != null)
+		{
+			if (_n < this.slots.length)
+			{
+				var _tempPieces:FlxTypedGroup<Piece> = this.slots.members[_n].readPieces();
+
+				for (i in 0..._tempPieces.length)
+					_pieceSize.push(_tempPieces.members[i].getPiecesSize());
+			}
+		}
+
+		return _pieceSize;
+	}
 
 	public function readSmallPieces():Array<Array<Int>>
 	{
