@@ -1,4 +1,6 @@
+import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
@@ -6,13 +8,38 @@ import haxe.Log;
 
 class Piece extends FlxSprite
 {
+	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
+	private var parent:Player;
+
 	private var pieceSize:Int = 1;
 	private var pieceColor:FlxColor = FlxColor.WHITE;
+
+	private var pickedUp:Bool = false;
+	private var locked:Bool = false;
+
+	public static inline var SMALL:Int = 0;
+	public static inline var MEDIUM:Int = 1;
+	public static inline var LARGE:Int = 2;
 
 	// Constructor
 	public function new(_x:Float = 0, _y:Float = 0)
 	{
 		super(_x, _y);
+	}
+
+	public function setParent(_parent:Player)
+	{
+		this.parent = _parent;
+	}
+
+	public function setSlots(_slots:FlxTypedGroup<Slot>)
+	{
+		this.slots = _slots;
+	}
+
+	override public function setPosition(x:Float = 0.0, y:Float = 0.0)
+	{
+		super.setPosition(x - this.width / 2, y - this.height / 2);
 	}
 
 	public function setPiecesSize(_pieceSize:Int)
@@ -33,6 +60,11 @@ class Piece extends FlxSprite
 	public function getPiecesColor(_color:FlxColor)
 	{
 		return this.pieceColor;
+	}
+
+	public function isPickedup()
+	{
+		return this.pickedUp;
 	}
 
 	public function create()
@@ -62,9 +94,44 @@ class Piece extends FlxSprite
 
 	public function moveTo(_point:FlxPoint)
 	{
-		Log.trace("Move to " + Std.string(_point.x) + "," + Std.string(_point.y));
-
 		// Move Piece to Point
 		FlxTween.tween(this, {x: _point.x - Std.int(width / 2), y: _point.y - Std.int(height / 2)}, 0.5);
+	}
+
+	public function onClicked()
+	{
+		Log.trace("Clicked");
+
+		this.pickedUp = true;
+	}
+
+	public function onDroped()
+	{
+		Log.trace("Dropped");
+
+		this.pickedUp = false;
+
+		for (i in 0...this.slots.length)
+		{
+			if (this.overlaps(this.slots.members[i]))
+			{
+				this.moveTo(this.slots.members[i].getCenter()); // Log.trace("On slot");
+			}
+		}
+	}
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (this.isPickedup())
+		{
+			this.setPosition(FlxG.mouse.getPosition().x, FlxG.mouse.getPosition().y);
+		}
+
+		// if (((FlxG.mouse.justPressed) && FlxG.mouse.overlaps(this)) && (!this.locked))
+		// {
+		// 	Log.trace("Clicked");
+		// }
 	}
 }

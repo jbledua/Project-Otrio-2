@@ -41,13 +41,20 @@ class Slot extends FlxSprite
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+	}
 
-		if (FlxG.mouse.justPressed)
+	public function readPieces():FlxTypedGroup<Piece>
+	{
+		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+
+		for (i in 0...this.pieces.length)
 		{
-			if (FlxG.mouse.overlaps(this))
+			if (this.overlaps(this.pieces.members[i]))
 			{
-				Log.trace("Clicked");
+				_pieces.add(this.pieces.members[i]);
 			}
 		}
+
+		return _pieces;
 	}
 }

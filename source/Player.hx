@@ -2,20 +2,20 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
-import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import haxe.Log;
 
 class Player extends FlxSprite
 {
-	private var pieces:FlxTypedGroup<Piece>;
-	private var piecesStartIndex:Int = 0; //
+	public static inline var VERTICAL:Int = 0;
+	public static inline var HORIZONTAL:Int = 1;
 
-	private var slots:FlxTypedGroup<Slot>;
-	private var slotStartIndex:Int = 0; //
+	private var pieces:FlxTypedGroup<Piece>; // Global Group of all Pieces
+	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
 
-	private var playerPieces:FlxTypedGroup<Piece>;
-	private var playerSlots:FlxTypedGroup<Slot>;
+	private var playerPieces:FlxTypedGroup<Piece>; // Local Group of Pieces that belong to the player
+	private var playerSlots:FlxTypedGroup<Slot>; // Local Group of Slots that belong to the player
+	private var playerNumber:Int = 0;
 
 	private var type:Int = 1; // Used to tell if player is horizontal or vertical
 
@@ -38,6 +38,16 @@ class Player extends FlxSprite
 	public function setSlots(_slots:FlxTypedGroup<Slot>)
 	{
 		this.slots = _slots;
+	}
+
+	public function setPlayerNumber(_number:Int)
+	{
+		this.playerNumber = _number;
+	}
+
+	public function getPlayerNumber():Int
+	{
+		return this.playerNumber;
 	}
 
 	public function setType(_type:Int)
@@ -66,27 +76,28 @@ class Player extends FlxSprite
 
 	public function create()
 	{
+		Log.trace("Player " + this.playerNumber + " created");
+
 		switch this.type
 		{
-			case 0:
-				// Replace with horizontal player sprite
-				// The horizontal dimensions
-				var _width = 100;
-				var _height = 300;
-				makeGraphic(_width, _height, this.colorBackground);
-			// makeGraphic(_width, _height, FlxColor.RED);
-			case 1:
+			case Player.VERTICAL:
 				// Replace with vertical player sprite
 				// The vertical dimensions
+				var _width = 100;
+				var _height = 300;
+				makeGraphic(_width, _height, this.colorBackground); // Replace with player sprite
+			case Player.HORIZONTAL:
+				// Replace with horizontal player sprite
+				// The horizontal dimensions
 				var _width = 300;
 				var _height = 100;
-				makeGraphic(_width, _height, this.colorBackground);
+				makeGraphic(_width, _height, this.colorBackground); // Replace with player sprite
 			default:
 				// Replace with vertical player sprite
-				// The default dimensions
-				var _width = 300;
-				var _height = 100;
-				makeGraphic(_width, _height, this.colorBackground);
+				// The vertical dimensions
+				var _width = 100;
+				var _height = 300;
+				makeGraphic(_width, _height, this.colorBackground); // Replace with player sprite
 		} // End Switch
 
 		this.playerSlots = new FlxTypedGroup<Slot>(3);
@@ -96,9 +107,6 @@ class Player extends FlxSprite
 	public function createSlots()
 	{
 		// This function could be impoved using for loops but it works for now
-
-		// Set where to start adding slots
-		this.slotStartIndex = this.slots.length;
 
 		// Instantiate Slots
 		this.playerSlots.add(new Slot());
@@ -114,7 +122,7 @@ class Player extends FlxSprite
 		// Check if Vertical or Horizontal Player
 		switch this.type
 		{
-			case 0: // Vertical Player
+			case Player.VERTICAL: // Vertical Player
 				// Top Slot
 				this.playerSlots.members[0].screenCenter();
 				this.playerSlots.members[0].y -= this.height / 3;
@@ -129,7 +137,7 @@ class Player extends FlxSprite
 				this.playerSlots.members[2].y += this.height / 3;
 				this.playerSlots.members[2].x = this.getCenter().x - this.playerSlots.members[2].width / 2;
 
-			case 1: // Horizontal Player
+			case Player.HORIZONTAL: // Horizontal Player
 				// Left Slot
 				this.playerSlots.members[0].screenCenter();
 				this.playerSlots.members[0].x -= this.width / 3;
@@ -153,8 +161,7 @@ class Player extends FlxSprite
 
 	public function createPieces()
 	{
-		// Set where to start adding pieases
-		this.piecesStartIndex = this.pieces.length;
+		// This function could be impoved using for loops but it works for now
 
 		// Instantiate pieces
 		this.playerPieces.add(new Piece());
@@ -170,17 +177,17 @@ class Player extends FlxSprite
 		this.playerPieces.add(new Piece());
 
 		// Set Pieces Sizes
-		this.playerPieces.members[0].setPiecesSize(2);
-		this.playerPieces.members[3].setPiecesSize(1);
-		this.playerPieces.members[6].setPiecesSize(0);
+		this.playerPieces.members[0].setPiecesSize(Piece.LARGE);
+		this.playerPieces.members[3].setPiecesSize(Piece.MEDIUM);
+		this.playerPieces.members[6].setPiecesSize(Piece.SMALL);
 
-		this.playerPieces.members[1].setPiecesSize(2);
-		this.playerPieces.members[4].setPiecesSize(1);
-		this.playerPieces.members[7].setPiecesSize(0);
+		this.playerPieces.members[1].setPiecesSize(Piece.LARGE);
+		this.playerPieces.members[4].setPiecesSize(Piece.MEDIUM);
+		this.playerPieces.members[7].setPiecesSize(Piece.SMALL);
 
-		this.playerPieces.members[2].setPiecesSize(2);
-		this.playerPieces.members[5].setPiecesSize(1);
-		this.playerPieces.members[8].setPiecesSize(0);
+		this.playerPieces.members[2].setPiecesSize(Piece.LARGE);
+		this.playerPieces.members[5].setPiecesSize(Piece.MEDIUM);
+		this.playerPieces.members[8].setPiecesSize(Piece.SMALL);
 
 		// Set Pieces Sizes
 		this.playerPieces.members[0].setPiecesColor(this.colorDark);
@@ -221,6 +228,29 @@ class Player extends FlxSprite
 		this.playerPieces.members[7].screenCenter();
 		this.playerPieces.members[8].screenCenter();
 
+		// Set slots
+		this.playerPieces.members[0].setSlots(this.slots);
+		this.playerPieces.members[1].setSlots(this.slots);
+		this.playerPieces.members[2].setSlots(this.slots);
+		this.playerPieces.members[3].setSlots(this.slots);
+		this.playerPieces.members[4].setSlots(this.slots);
+		this.playerPieces.members[5].setSlots(this.slots);
+		this.playerPieces.members[6].setSlots(this.slots);
+		this.playerPieces.members[7].setSlots(this.slots);
+		this.playerPieces.members[8].setSlots(this.slots);
+
+		// Set Parent
+		this.playerPieces.members[0].setParent(this);
+		this.playerPieces.members[1].setParent(this);
+		this.playerPieces.members[2].setParent(this);
+		this.playerPieces.members[3].setParent(this);
+		this.playerPieces.members[4].setParent(this);
+		this.playerPieces.members[5].setParent(this);
+		this.playerPieces.members[6].setParent(this);
+		this.playerPieces.members[7].setParent(this);
+		this.playerPieces.members[8].setParent(this);
+
+		// Add Piece to globle list
 		this.pieces.add(this.playerPieces.members[0]);
 		this.pieces.add(this.playerPieces.members[1]);
 		this.pieces.add(this.playerPieces.members[2]);
@@ -243,5 +273,35 @@ class Player extends FlxSprite
 		this.playerPieces.members[2].moveTo(this.playerSlots.members[2].getCenter());
 		this.playerPieces.members[5].moveTo(this.playerSlots.members[2].getCenter());
 		this.playerPieces.members[8].moveTo(this.playerSlots.members[2].getCenter());
-	} // createPieces
+	} // End createPieces
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (FlxG.mouse.justPressed)
+		{
+			var i = this.playerPieces.length - 1;
+			while (i >= 0)
+			{
+				if (FlxG.mouse.overlaps(this.playerPieces.members[i]))
+				{
+					this.playerPieces.members[i].onClicked();
+					break;
+				}
+				i--;
+			} // End For loop
+		}
+
+		if (FlxG.mouse.justReleased)
+		{
+			for (j in 0...this.playerPieces.length)
+			{
+				if (FlxG.mouse.overlaps(this.playerPieces.members[j]))
+				{
+					this.playerPieces.members[j].onDroped();
+				}
+			} // End For loop
+		}
+	}
 }

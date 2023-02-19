@@ -1,8 +1,12 @@
 package;
 
+import flixel.FlxG;
+import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.input.mouse.FlxMouseEventManager;
 import flixel.util.FlxColor;
+import haxe.Log;
 
 class PlayState extends FlxState
 {
@@ -11,15 +15,35 @@ class PlayState extends FlxState
 	private var pieces:FlxTypedGroup<Piece>;
 	private var slots:FlxTypedGroup<Slot>;
 
+	private var mouseManger:FlxMouseEventManager;
+
 	override public function create()
 	{
 		super.create();
 
-		// Instantiate Main Variables
-		this.board = new Board();
-		this.players = new FlxTypedGroup<Player>(4); // Max of Players Players
+		// this.players = new FlxTypedGroup<Player>(4); // Max of Players Players
 		this.pieces = new FlxTypedGroup<Piece>(36); // Max of 36 Pieces (12 Per Player in 4v4 - 14 Per Player in 2v2)
 		this.slots = new FlxTypedGroup<Slot>(21); // Max of 21 Slots (3 per Player and 9 in the Board)
+
+		// Create Game Board
+		this.createBoard();
+
+		// Create Game Players
+		this.createPlayers();
+
+		// Create Game Peices
+		this.createPeices();
+
+		add(this.board);
+		add(this.players);
+		add(this.slots);
+		add(this.pieces);
+	}
+
+	public function createBoard()
+	{
+		// Instantiate Board Variables
+		this.board = new Board();
 
 		// Create Game Board
 		this.board.create();
@@ -28,18 +52,14 @@ class PlayState extends FlxState
 		this.board.setSlots(this.slots); // To be used for checking overlap
 
 		this.board.createSlots();
-
-		this.createPlayers();
-
-		add(this.board);
-		add(this.players);
-		add(this.slots);
-		add(this.pieces);
 	}
 
 	public function createPlayers()
 	{
 		// This function could be impoved using for loops but it works for now
+
+		// Instantiate Player Variables
+		this.players = new FlxTypedGroup<Player>(4); // Max of Players Players
 
 		// Instantiate Player Variables
 		this.players.add(new Player());
@@ -48,10 +68,10 @@ class PlayState extends FlxState
 		this.players.add(new Player());
 
 		// Set Player Orenetation
-		this.players.members[0].setType(0);
-		this.players.members[1].setType(1);
-		this.players.members[2].setType(0);
-		this.players.members[3].setType(1);
+		this.players.members[0].setType(Player.VERTICAL);
+		this.players.members[1].setType(Player.HORIZONTAL);
+		this.players.members[2].setType(Player.VERTICAL);
+		this.players.members[3].setType(Player.HORIZONTAL);
 
 		// Set Player Colors
 		this.players.members[0].setColors(FlxColor.fromHSB(0, 1, 1, 1), FlxColor.fromHSB(0, 1, 0.75, 1), FlxColor.fromHSB(0, 1, 0.5, 1),
@@ -62,6 +82,12 @@ class PlayState extends FlxState
 			FlxColor.fromHSB(120, 1, 0.25, 1));
 		this.players.members[3].setColors(FlxColor.fromHSB(300, 1, 1, 1), FlxColor.fromHSB(300, 1, 0.75, 1), FlxColor.fromHSB(300, 1, 0.5, 1),
 			FlxColor.fromHSB(300, 1, 0.25, 1));
+
+		// Set Plater Numbers
+		this.players.members[0].setPlayerNumber(0);
+		this.players.members[1].setPlayerNumber(1);
+		this.players.members[2].setPlayerNumber(2);
+		this.players.members[3].setPlayerNumber(3);
 
 		// Create Player
 		this.players.members[0].create();
@@ -78,6 +104,11 @@ class PlayState extends FlxState
 		this.players.members[2].x += this.board.width / 2 + this.players.members[2].width / 2;
 		this.players.members[3].screenCenter();
 		this.players.members[3].y += this.board.height / 2 + this.players.members[3].height / 2;
+	}
+
+	public function createPeices()
+	{
+		// This function could be impoved using for loops but it works for now
 
 		// Add Pieces Group to Players (To be used for checking overlap)
 		this.players.members[0].setPieces(this.pieces);
@@ -104,5 +135,45 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if (FlxG.keys.justPressed.ONE)
+		{
+			Log.trace("Small Pieces");
+			this.logArray2D(this.board.readSmallPieces());
+		}
+
+		if (FlxG.keys.justPressed.TWO)
+		{
+			Log.trace("Med Pieces");
+			this.logArray2D(this.board.readMedPieces());
+		}
+
+		if (FlxG.keys.justPressed.THREE)
+		{
+			Log.trace("Large Pieces");
+			this.logArray2D(this.board.readLargePieces());
+		}
+
+		if (FlxG.keys.justPressed.R)
+		{
+			this.logArray3D(this.board.readBoard());
+		}
+	}
+
+	public function logArray3D(_array:Array<Array<Array<Int>>>)
+	{
+		for (i in 0..._array.length)
+		{
+			Log.trace("Board " + i);
+			this.logArray2D(_array[i]);
+		}
+	}
+
+	public function logArray2D(_array:Array<Array<Int>>)
+	{
+		for (i in 0..._array.length)
+		{
+			Log.trace(i + ":" + _array[i]);
+		}
 	}
 }
