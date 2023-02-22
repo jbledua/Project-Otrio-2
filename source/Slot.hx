@@ -12,6 +12,7 @@ class Slot extends FlxSprite
 	private var pieces:FlxTypedGroup<Piece>; // Global Group of all Pieces
 
 	// Local Pieces
+	private var parent:Player;
 	private var slotPieces:FlxTypedGroup<Piece>; // Local Group of Pieces that are created by the slot
 
 	private var colorLight:FlxColor = FlxColor.fromHSB(0, 0, 1, 1);
@@ -37,6 +38,16 @@ class Slot extends FlxSprite
 		this.colorBackground = _colorBackground;
 	}
 
+	public function setParent(_parent:Player)
+	{
+		this.parent = _parent;
+	}
+
+	public function getParent():Player
+	{
+		return this.parent;
+	}
+
 	// Constructor
 	public function new(_x:Float = 0, _y:Float = 0)
 	{
@@ -51,7 +62,7 @@ class Slot extends FlxSprite
 		return new FlxPoint(this.x + Std.int(this.width / 2), this.y + Std.int(this.height / 2));
 	}
 
-	public function create()
+	public function create(?_slots:FlxTypedGroup<Slot>, ?_pieces:FlxTypedGroup<Piece>)
 	{
 		// The default dimensions
 		var _width = 50;
@@ -64,6 +75,28 @@ class Slot extends FlxSprite
 	public function readPieces():FlxTypedGroup<Piece>
 	{
 		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+
+		if (this.pieces != null)
+		{
+			for (i in 0...this.pieces.length)
+			{
+				if (this.overlaps(this.pieces.members[i]))
+				{
+					_pieces.add(this.pieces.members[i]);
+				}
+			}
+		}
+		else
+		{
+			Log.trace("Error: can not Read Slot. Global Pieces Not Defined");
+		}
+
+		return _pieces;
+	} // End readPieces
+
+	public function readPiecesByRef(_pieces:FlxTypedGroup<Piece>)
+	{
+		// var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
 
 		if (this.pieces != null)
 		{
@@ -104,7 +137,7 @@ class Slot extends FlxSprite
 		return _space;
 	}
 
-	public function createPieces()
+	public function createPieces(_locked:Bool = true):FlxTypedGroup<Piece>
 	{
 		this.slotPieces = new FlxTypedGroup<Piece>(3);
 
@@ -120,9 +153,9 @@ class Slot extends FlxSprite
 		this.slotPieces.members[1].setPiecesColor(this.colorPrimary);
 		this.slotPieces.members[2].setPiecesColor(this.colorDark);
 
-		this.slotPieces.members[0].create();
-		this.slotPieces.members[1].create();
-		this.slotPieces.members[2].create();
+		this.slotPieces.members[0].create(_locked);
+		this.slotPieces.members[1].create(_locked);
+		this.slotPieces.members[2].create(_locked);
 
 		this.slotPieces.members[0].screenCenter();
 		this.slotPieces.members[1].screenCenter();
@@ -143,35 +176,39 @@ class Slot extends FlxSprite
 		this.slotPieces.members[0].moveTo(this.getCenter());
 		this.slotPieces.members[1].moveTo(this.getCenter());
 		this.slotPieces.members[2].moveTo(this.getCenter());
+
+		return this.slotPieces;
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.mouse.justPressed)
+		// Check if slotPieces is defined
+		if (this.slotPieces != null)
 		{
-			var i = this.slotPieces.length - 1;
-			while (i >= 0)
+			if (FlxG.mouse.justPressed)
 			{
-				if (FlxG.mouse.overlaps(this.slotPieces.members[i]))
+				for (i in 0...this.slotPieces.length)
 				{
-					this.slotPieces.members[i].onClicked();
-					break;
-				}
-				i--;
-			} // End For loop
-		}
+					if (FlxG.mouse.overlaps(this.slotPieces.members[i]))
+					{
+						this.slotPieces.members[i].onClicked();
+						break;
+					}
+				} // End For loop
+			} // End if justPressed
 
-		if (FlxG.mouse.justReleased)
-		{
-			for (j in 0...this.slotPieces.length)
+			if (FlxG.mouse.justReleased)
 			{
-				if (FlxG.mouse.overlaps(this.slotPieces.members[j]))
+				for (j in 0...this.slotPieces.length)
 				{
-					this.slotPieces.members[j].onDroped();
-				}
-			} // End For loop
-		}
-	}
+					if (FlxG.mouse.overlaps(this.slotPieces.members[j]))
+					{
+						this.slotPieces.members[j].onDroped();
+					}
+				} // End For loop
+			} // End if justReleased
+		} // End if
+	} // End Update
 }

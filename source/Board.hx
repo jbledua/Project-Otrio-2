@@ -26,7 +26,7 @@ class Board extends FlxSprite
 		this.slots = _slots;
 	}
 
-	public function create()
+	public function create(?_slots:FlxTypedGroup<Slot>, ?_pieces:FlxTypedGroup<Piece>)
 	{
 		// The default dimensions
 		var _width = 300;
@@ -142,79 +142,83 @@ class Board extends FlxSprite
 		return _pieceSize;
 	}
 
-	public function readSmallPieces():Array<Array<Int>>
+	public function readPiecesOfNSize(_size:Int):Array<Array<Int>>
 	{
 		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
 
-		var _array2:Array<Int> = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
-		for (i in 0...3)
+		for (i in 0..._array.length)
 		{
-			for (j in 0...3)
+			for (j in 0..._array[i].length)
 			{
-				// _array[i][j] = _array2[i * 3 + j];
+				var _tempPieces:FlxTypedGroup<Piece> = boardSlots.members[i * _array.length + j].readPieces();
+				var _playerIndex:Int = -1;
 
-				var _tempPieces:FlxTypedGroup<Piece> = boardSlots.members[i * 3 + j].readPieces();
-
-				if (_tempPieces.length != null)
+				for (k in 0..._tempPieces.length)
 				{
-					for (k in 0..._tempPieces.length)
+					if (_tempPieces.members[k].getPiecesSize() == _size)
 					{
-						if (_tempPieces.members[k].getPiecesSize() == Piece.SMALL)
-						{
-							_array[i][j] = 2;
-						}
-					} // End For k
-				} // End if
-			} // End For j
-		} // End For i
+						_playerIndex = _tempPieces.members[k].getParent().getParent().getPlayerNumber();
+						break;
+					}
+				}
 
-		// for (i in 0...boardSlots.length)
-		// {
-		// 	var _tempPieces:FlxTypedGroup<Piece> = boardSlots.members[i].readPieces();
-
-		// 	for (j in 0..._tempPieces.length)
-		// 	{
-		// 		if (_tempPieces.members)
-		// 	}
-		// }
+				_array[i][j] = _playerIndex;
+			}
+		}
 
 		return _array;
+	} // End readPiecesOfNSize
+
+	//--------------------------------------------------------------------------------------------------------
+	//               Small
+	// | [0][0][0] [0][0][1] [0][0][2] |
+	// | [0][1][0] [0][1][1] [0][1][2] |
+	// | [0][2][0] [0][2][1] [0][2][2] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readSmallPieces():Array<Array<Int>>
+	{
+		return readPiecesOfNSize(Piece.SMALL);
 	}
+
+	//--------------------------------------------------------------------------------------------------------
+	//              Medium
+	// | [1][0][0] [1][0][1] [1][0][2] |
+	// | [1][1][0] [1][1][1] [1][1][2] |
+	// | [1][2][0] [1][2][1] [1][2][2] |
+	//--------------------------------------------------------------------------------------------------------
 
 	public function readMedPieces():Array<Array<Int>>
 	{
-		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
-
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
-
-		return _array;
+		return readPiecesOfNSize(Piece.MEDIUM);
 	}
+
+	//--------------------------------------------------------------------------------------------------------
+	//               Large
+	// | [2][0][0] [2][0][1] [2][0][2] |
+	// | [2][1][0] [2][1][1] [2][1][2] |
+	// | [2][2][0] [2][2][1] [2][2][2] |
+	//--------------------------------------------------------------------------------------------------------
 
 	public function readLargePieces():Array<Array<Int>>
 	{
-		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
-
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
-
-		return _array;
+		return readPiecesOfNSize(Piece.LARGE);
 	}
+
+	//--------------------------------------------------------------------------------------------------------
+	//               Small                               Med                               Large
+	// | [0][0][0] [0][0][1] [0][0][2] |  | [1][0][0] [1][0][1] [1][0][2] |  | [2][0][0] [2][0][1] [2][0][2] |
+	// | [0][1][0] [0][1][2] [0][1][2] |  | [1][1][0] [1][1][1] [1][1][2] |  | [2][1][0] [2][1][1] [2][1][2] |
+	// | [0][2][0] [0][2][1] [0][2][2] |  | [1][2][0] [1][2][1] [1][2][2] |  | [2][2][0] [2][2][1] [2][2][2] |
+	//--------------------------------------------------------------------------------------------------------
 
 	public function readBoard():Array<Array<Array<Int>>>
 	{
-		var _array:Array<Array<Array<Int>>> = [
-			[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]],
-			[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]],
-			[[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]]
-		];
+		var _array:Array<Array<Array<Int>>> = [];
 
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
-		// Log.trace("|-1,-1,-1|");
+		_array.push(readSmallPieces());
+		_array.push(readMedPieces());
+		_array.push(readLargePieces());
 
 		return _array;
 	}

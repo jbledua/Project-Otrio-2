@@ -1,12 +1,15 @@
 -main ApplicationMain 
--cp C:/HaxeToolkit/haxe/lib/flixel/5,1,0
--D flixel=5.1.0
+-cp C:/HaxeToolkit/haxe/lib/flixel/5,2,1
+-D flixel=5.2.1
 --macro openfl.utils._internal.ExtraParamsMacro.include()
 -cp C:/HaxeToolkit/haxe/lib/openfl/9,2,0/src
 -D openfl=9.2.0
 --macro lime._internal.macros.DefineMacro.run()
 -cp C:/HaxeToolkit/haxe/lib/lime/8,0,0/src
 -D lime=8.0.0
+--macro keep('IntIterator')
+-cp C:/HaxeToolkit/haxe/lib/hscript/2,5,0
+-D hscript=2.5.0
 -cp source
 -D tools=8.0.0
 -D lime-canvas

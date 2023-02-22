@@ -15,7 +15,7 @@ class Piece extends FlxSprite
 	private var pieceColor:FlxColor = FlxColor.WHITE;
 
 	private var pickedUp:Bool = false;
-	private var locked:Bool = false;
+	private var locked:Bool = true;
 
 	public static inline var SMALL:Int = 0;
 	public static inline var MEDIUM:Int = 1;
@@ -30,6 +30,11 @@ class Piece extends FlxSprite
 	public function setParent(_parent:Slot)
 	{
 		this.parent = _parent;
+	}
+
+	public function getParent():Slot
+	{
+		return this.parent;
 	}
 
 	public function setSlots(_slots:FlxTypedGroup<Slot>)
@@ -67,9 +72,26 @@ class Piece extends FlxSprite
 		return this.pickedUp;
 	}
 
-	public function create()
+	public function lock()
+	{
+		this.locked = true;
+	}
+
+	public function unlock()
+	{
+		this.locked = false;
+	}
+
+	public function isLocked()
+	{
+		return this.locked;
+	}
+
+	public function create(_locked:Bool = true)
 	{
 		var _pieceSize:Int;
+
+		this.locked = _locked;
 
 		switch this.pieceSize
 		{
@@ -101,8 +123,19 @@ class Piece extends FlxSprite
 	public function onClicked()
 	{
 		Log.trace("Clicked");
+		if (!this.locked)
+		{
+			this.pickedUp = true;
+		}
+		else
+		{
+			this.playErrorAnimation();
+		}
+	}
 
-		this.pickedUp = true;
+	public function playErrorAnimation()
+	{
+		FlxTween.shake(this);
 	}
 
 	public function onDroped()
@@ -123,6 +156,7 @@ class Piece extends FlxSprite
 				else
 				{
 					Log.trace("Error: Slot is full");
+					this.playErrorAnimation();
 				}
 			}
 		}
@@ -136,10 +170,5 @@ class Piece extends FlxSprite
 		{
 			this.setPosition(FlxG.mouse.getPosition().x, FlxG.mouse.getPosition().y);
 		}
-
-		// if (((FlxG.mouse.justPressed) && FlxG.mouse.overlaps(this)) && (!this.locked))
-		// {
-		// 	Log.trace("Clicked");
-		// }
 	}
 }

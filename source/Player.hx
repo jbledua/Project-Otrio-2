@@ -74,7 +74,7 @@ class Player extends FlxSprite
 		return new FlxPoint(this.x + Std.int(this.width / 2), this.y + Std.int(this.height / 2));
 	}
 
-	public function create()
+	public function create(?_slots:FlxTypedGroup<Slot>, ?_pieces:FlxTypedGroup<Piece>)
 	{
 		Log.trace("Player " + this.playerNumber + " created");
 
@@ -117,6 +117,11 @@ class Player extends FlxSprite
 		this.playerSlots.members[0].create();
 		this.playerSlots.members[1].create();
 		this.playerSlots.members[2].create();
+
+		// Set Parent Slots
+		this.playerSlots.members[0].setParent(this);
+		this.playerSlots.members[1].setParent(this);
+		this.playerSlots.members[2].setParent(this);
 
 		// Move Slots into Place
 		// Check if Vertical or Horizontal Player
@@ -170,12 +175,27 @@ class Player extends FlxSprite
 		this.slots.add(playerSlots.members[2]);
 	} // End createSlots()
 
-	public function createPieces()
+	public function createPieces(_locked:Bool = true)
 	{
 		// This function could be impoved using for loops but it works for now
-		this.playerSlots.members[0].createPieces();
-		this.playerSlots.members[1].createPieces();
-		this.playerSlots.members[2].createPieces();
+		var _temp1:FlxTypedGroup<Piece> = this.playerSlots.members[0].createPieces(_locked);
+		var _temp2:FlxTypedGroup<Piece> = this.playerSlots.members[1].createPieces(_locked);
+		var _temp3:FlxTypedGroup<Piece> = this.playerSlots.members[2].createPieces(_locked);
+
+		for (i in 0..._temp1.length)
+		{
+			this.playerPieces.add(_temp1.members[i]);
+		}
+
+		for (i in 0..._temp2.length)
+		{
+			this.playerPieces.add(_temp2.members[i]);
+		}
+
+		for (i in 0..._temp3.length)
+		{
+			this.playerPieces.add(_temp3.members[i]);
+		}
 		/*
 			// Instantiate pieces
 			this.playerPieces.add(new Piece());
@@ -291,33 +311,96 @@ class Player extends FlxSprite
 			// */
 	} // End createPieces
 
+	public function startTurn()
+	{
+		Log.trace("Player " + this.playerNumber + " - Start Turn");
+
+		for (i in 0...this.playerPieces.length)
+		{
+			this.playerPieces.members[i].unlock();
+		}
+
+		// Log.trace("Pieces on slot 0 " + this.playerSlots.members[0].readPieces().length);
+		// Log.trace("Pieces on slot 1 " + this.playerSlots.members[1].readPieces().length);
+		// Log.trace("Pieces on slot 2 " + this.playerSlots.members[2].readPieces().length);
+
+		// for (i in 0...this.playerSlots.length)
+		// {
+		// 	this.playerPieces.members[i].unlock();
+		// }
+
+		// _pieces:FlxTypedGroup<Piece>= new FlxTypedGroup<Piece>(3);
+
+		// var _tempPieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(6);
+
+		// for (i in 0...this.playerSlots.length)
+		// {
+		// 	// var _tempPieces1:FlxTypedGroup<Piece> = this.playerSlots.members[i].readPieces();
+
+		// 	var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+
+		// 	this.playerSlots.members[i].readPiecesByRef(_pieces);
+
+		// 	Log.trace("Pieces on slot " + i + " " + _pieces.length);
+
+		// 	// for (j in 0..._pieces.length)
+		// 	// {
+		// 	// 	_pieces.members[j].unlock();
+		// 	// }
+		// }
+
+		// var _pieces1:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+		// var _pieces2:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+		// var _pieces3:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+
+		// this.playerSlots.members[0].readPiecesByRef(_pieces1);
+		// this.playerSlots.members[1].readPiecesByRef(_pieces2);
+		// this.playerSlots.members[2].readPiecesByRef(_pieces3);
+
+		// Log.trace("Pieces on slot " + 0 + " " + _pieces1.length);
+		// Log.trace("Pieces on slot " + 1 + " " + _pieces2.length);
+		// Log.trace("Pieces on slot " + 2 + " " + _pieces3.length);
+	}
+
+	public function endTurn()
+	{
+		Log.trace("Player " + this.playerNumber + " - End Turn");
+
+		for (i in 0...this.playerPieces.length)
+		{
+			this.playerPieces.members[i].lock();
+		}
+	}
+
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.mouse.justPressed)
-		{
-			var i = this.playerPieces.length - 1;
-			while (i >= 0)
+		/*
+			if (FlxG.mouse.justPressed)
 			{
-				if (FlxG.mouse.overlaps(this.playerPieces.members[i]))
+				var i = this.playerPieces.length - 1;
+				while (i >= 0)
 				{
-					this.playerPieces.members[i].onClicked();
-					break;
-				}
-				i--;
-			} // End For loop
-		}
+					if (FlxG.mouse.overlaps(this.playerPieces.members[i]))
+					{
+						this.playerPieces.members[i].onClicked();
+						break;
+					}
+					i--;
+				} // End For loop
+			}
 
-		if (FlxG.mouse.justReleased)
-		{
-			for (j in 0...this.playerPieces.length)
+			if (FlxG.mouse.justReleased)
 			{
-				if (FlxG.mouse.overlaps(this.playerPieces.members[j]))
+				for (j in 0...this.playerPieces.length)
 				{
-					this.playerPieces.members[j].onDroped();
-				}
-			} // End For loop
-		}
+					if (FlxG.mouse.overlaps(this.playerPieces.members[j]))
+					{
+						this.playerPieces.members[j].onDroped();
+					}
+				} // End For loop
+			}
+			// */
 	}
 }
