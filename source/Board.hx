@@ -124,6 +124,24 @@ class Board extends FlxSprite
 		this.slots.add(this.boardSlots.members[8]);
 	} // End createSlots
 
+	public function readSlotNMSize(_n:Int, _m:Int):Array<Int>
+	{
+		var _pieceSize:Array<Int> = [];
+
+		if (this.boardSlots != null)
+		{
+			if ((_n * 3 + _m) < this.slots.length)
+			{
+				var _tempPieces:FlxTypedGroup<Piece> = this.slots.members[_n * 3 + _m].getPiecesOnSlot();
+
+				for (i in 0..._tempPieces.length)
+					_pieceSize.push(_tempPieces.members[i].getPiecesSize());
+			}
+		}
+
+		return _pieceSize;
+	}
+
 	public function readSlotNSize(_n:Int):Array<Int>
 	{
 		var _pieceSize:Array<Int> = [];
@@ -132,7 +150,7 @@ class Board extends FlxSprite
 		{
 			if (_n < this.slots.length)
 			{
-				var _tempPieces:FlxTypedGroup<Piece> = this.slots.members[_n].readPieces();
+				var _tempPieces:FlxTypedGroup<Piece> = this.slots.members[_n].getPiecesOnSlot();
 
 				for (i in 0..._tempPieces.length)
 					_pieceSize.push(_tempPieces.members[i].getPiecesSize());
@@ -150,7 +168,7 @@ class Board extends FlxSprite
 		{
 			for (j in 0..._array[i].length)
 			{
-				var _tempPieces:FlxTypedGroup<Piece> = boardSlots.members[i * _array.length + j].readPieces();
+				var _tempPieces:FlxTypedGroup<Piece> = boardSlots.members[i * _array.length + j].getPiecesOnSlot();
 				var _playerIndex:Int = -1;
 
 				for (k in 0..._tempPieces.length)
@@ -168,6 +186,16 @@ class Board extends FlxSprite
 
 		return _array;
 	} // End readPiecesOfNSize
+
+	public function readSlot(_x, _y, _z):Int
+	{
+		var _playerIndex:Int = -1;
+
+		if (readSlotNMSize(_x, _y) == _z)
+			_playerIndex = 4;
+
+		return _playerIndex;
+	}
 
 	//--------------------------------------------------------------------------------------------------------
 	//               Small
@@ -221,5 +249,12 @@ class Board extends FlxSprite
 		_array.push(readLargePieces());
 
 		return _array;
+	}
+
+	public function readRight():Array<Array<Int>>
+	{
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[][] = readSlotNMSize(0, 0);
 	}
 }

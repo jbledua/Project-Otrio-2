@@ -6,6 +6,10 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import haxe.Log;
 
+//-----------------------------------------------------------------------------
+// CLASS: Piece
+// DESCR:
+//-----------------------------------------------------------------------------
 class Piece extends FlxSprite
 {
 	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
@@ -27,7 +31,7 @@ class Piece extends FlxSprite
 		super(_x, _y);
 	}
 
-	public function setParent(_parent:Slot)
+	public function setParent(_parent:Slot):Void
 	{
 		this.parent = _parent;
 	}
@@ -37,17 +41,17 @@ class Piece extends FlxSprite
 		return this.parent;
 	}
 
-	public function setSlots(_slots:FlxTypedGroup<Slot>)
+	public function setSlots(_slots:FlxTypedGroup<Slot>):Void
 	{
 		this.slots = _slots;
 	}
 
-	override public function setPosition(x:Float = 0.0, y:Float = 0.0)
+	override public function setPosition(x:Float = 0.0, y:Float = 0.0):Void
 	{
 		super.setPosition(x - this.width / 2, y - this.height / 2);
 	}
 
-	public function setPiecesSize(_pieceSize:Int)
+	public function setPiecesSize(_pieceSize:Int):Void
 	{
 		this.pieceSize = _pieceSize;
 	}
@@ -67,27 +71,27 @@ class Piece extends FlxSprite
 		return this.pieceColor;
 	}
 
-	public function isPickedup()
+	public function isPickedup():Bool
 	{
 		return this.pickedUp;
 	}
 
-	public function lock()
+	public function lock():Void
 	{
 		this.locked = true;
 	}
 
-	public function unlock()
+	public function unlock():Void
 	{
 		this.locked = false;
 	}
 
-	public function isLocked()
+	public function isLocked():Bool
 	{
 		return this.locked;
 	}
 
-	public function create(_locked:Bool = true)
+	public function create(_locked:Bool = true):Void
 	{
 		var _pieceSize:Int;
 
@@ -114,10 +118,21 @@ class Piece extends FlxSprite
 		} // End Switch
 	} // End Create
 
+	public function resetLocation():Void
+	{
+		if (!this.locked)
+			this.moveToStart();
+	}
+
 	public function moveTo(_point:FlxPoint)
 	{
 		// Move Piece to Point
 		FlxTween.tween(this, {x: _point.x - Std.int(width / 2), y: _point.y - Std.int(height / 2)}, 0.5);
+	}
+
+	public function moveToStart()
+	{
+		this.moveTo(this.getParent().getCenter());
 	}
 
 	public function onClicked()
@@ -156,7 +171,10 @@ class Piece extends FlxSprite
 				else
 				{
 					Log.trace("Error: Slot is full");
-					this.playErrorAnimation();
+					if (!this.isLocked())
+					{
+						this.moveToStart();
+					}
 				}
 			}
 		}

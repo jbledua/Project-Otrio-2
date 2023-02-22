@@ -74,7 +74,7 @@ class Player extends FlxSprite
 		return new FlxPoint(this.x + Std.int(this.width / 2), this.y + Std.int(this.height / 2));
 	}
 
-	public function create(?_slots:FlxTypedGroup<Slot>, ?_pieces:FlxTypedGroup<Piece>)
+	public function create(?_slots:FlxTypedGroup<Slot>, ?_slots:FlxTypedGroup<Slot>)
 	{
 		Log.trace("Player " + this.playerNumber + " created");
 
@@ -104,7 +104,7 @@ class Player extends FlxSprite
 		this.playerPieces = new FlxTypedGroup<Piece>(9);
 	} // End create()
 
-	public function createSlots()
+	public function createSlots(?_slots:FlxTypedGroup<Slot>)
 	{
 		// This function could be impoved using for loops but it works for now
 
@@ -175,27 +175,38 @@ class Player extends FlxSprite
 		this.slots.add(playerSlots.members[2]);
 	} // End createSlots()
 
-	public function createPieces(_locked:Bool = true)
+	public function createPieces(_locked:Bool = true, ?_slots:FlxTypedGroup<Slot>)
 	{
 		// This function could be impoved using for loops but it works for now
-		var _temp1:FlxTypedGroup<Piece> = this.playerSlots.members[0].createPieces(_locked);
-		var _temp2:FlxTypedGroup<Piece> = this.playerSlots.members[1].createPieces(_locked);
-		var _temp3:FlxTypedGroup<Piece> = this.playerSlots.members[2].createPieces(_locked);
 
-		for (i in 0..._temp1.length)
+		for (i in 0...this.playerSlots.length)
 		{
-			this.playerPieces.add(_temp1.members[i]);
+			var _tempPiece:FlxTypedGroup<Piece> = this.playerSlots.members[i].createPieces(_locked);
+
+			for (j in 0..._tempPiece.length)
+			{
+				this.playerPieces.add(_tempPiece.members[j]);
+			}
 		}
 
-		for (i in 0..._temp2.length)
-		{
-			this.playerPieces.add(_temp2.members[i]);
-		}
+		// var _temp1:FlxTypedGroup<Piece> = this.playerSlots.members[0].createPieces(_locked);
+		// var _temp2:FlxTypedGroup<Piece> = this.playerSlots.members[1].createPieces(_locked);
+		// var _temp3:FlxTypedGroup<Piece> = this.playerSlots.members[2].createPieces(_locked);
 
-		for (i in 0..._temp3.length)
-		{
-			this.playerPieces.add(_temp3.members[i]);
-		}
+		// for (j in 0..._temp1.length)
+		// {
+		// 	this.playerPieces.add(_temp1.members[j]);
+		// }
+
+		// for (j in 0..._temp2.length)
+		// {
+		// 	this.playerPieces.add(_temp2.members[j]);
+		// }
+
+		// for (j in 0..._temp3.length)
+		// {
+		// 	this.playerPieces.add(_temp3.members[j]);
+		// }
 		/*
 			// Instantiate pieces
 			this.playerPieces.add(new Piece());
@@ -369,6 +380,16 @@ class Player extends FlxSprite
 		for (i in 0...this.playerPieces.length)
 		{
 			this.playerPieces.members[i].lock();
+		}
+	}
+
+	public function resetPieces()
+	{
+		Log.trace("Player " + this.playerNumber + " - Reset Pieces");
+
+		for (i in 0...this.playerPieces.length)
+		{
+			this.playerPieces.members[i].resetLocation();
 		}
 	}
 

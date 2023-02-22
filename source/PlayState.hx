@@ -157,6 +157,8 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 
+		var _winner:Int = -1;
+
 		if (FlxG.keys.justPressed.N)
 		{
 			this.endTurn();
@@ -165,52 +167,78 @@ class PlayState extends FlxState
 		if (FlxG.keys.justPressed.ONE)
 		{
 			Log.trace("Small Pieces");
-			this.logArray2D(this.board.readSmallPieces());
+			// this.logArray2D(this.board.readSmallPieces());
+
+			_winner = this.checkWin(this.board.readSmallPieces());
+
+			if (_winner == -1)
+				Log.trace("No Winner");
+			else
+				Log.trace("Winner: " + _winner);
 		}
 
 		if (FlxG.keys.justPressed.TWO)
 		{
 			Log.trace("Med Pieces");
-			this.logArray2D(this.board.readMedPieces());
+			// this.logArray2D(this.board.readMedPieces());
+
+			_winner = this.checkWin(this.board.readMedPieces());
+
+			if (_winner == -1)
+				Log.trace("No Winner");
+			else
+				Log.trace("Winner: " + _winner);
 		}
 
 		if (FlxG.keys.justPressed.THREE)
 		{
 			Log.trace("Large Pieces");
-			this.logArray2D(this.board.readLargePieces());
+			// this.logArray2D(this.board.readLargePieces());
+
+			_winner = this.checkWin(this.board.readLargePieces());
+
+			if (_winner == -1)
+				Log.trace("No Winner");
+			else
+				Log.trace("Winner: " + _winner);
 		}
 
 		if (FlxG.keys.justPressed.R)
+		{
+			this.players.members[this.turnIndex].resetPieces();
+		}
+
+		if (FlxG.keys.justPressed.B)
 		{
 			this.logArray3D(this.board.readBoard());
 		}
 
 		if (FlxG.keys.justPressed.NUMPADSEVEN)
-			Log.trace("[0][0]:" + this.board.readSlotNSize(0));
+			Log.trace("[0][0]:" + this.board.readSlotNMSize(0, 0));
 
 		if (FlxG.keys.justPressed.NUMPADEIGHT)
-			Log.trace("[0][1]:" + this.board.readSlotNSize(1));
+			Log.trace("[0][1]:" + this.board.readSlotNMSize(0, 1));
 
 		if (FlxG.keys.justPressed.NUMPADNINE)
-			Log.trace("[0][2]:" + this.board.readSlotNSize(3));
+			Log.trace("[0][2]:" + this.board.readSlotNMSize(0, 2));
 
 		if (FlxG.keys.justPressed.NUMPADFOUR)
-			Log.trace("[1][0]:" + this.board.readSlotNSize(4));
+			Log.trace("[1][0]:" + this.board.readSlotNMSize(1, 0));
 
 		if (FlxG.keys.justPressed.NUMPADFIVE)
-			Log.trace("[1][1]:" + this.board.readSlotNSize(5));
+			Log.trace("[1][1]:" + this.board.readSlotNMSize(1, 1));
 
 		if (FlxG.keys.justPressed.NUMPADSIX)
-			Log.trace("[1][2]:" + this.board.readSlotNSize(6));
+			Log.trace("[1][2]:" + this.board.readSlotNMSize(1, 2));
 
 		if (FlxG.keys.justPressed.NUMPADONE)
-			Log.trace("[2][0]:" + this.board.readSlotNSize(7));
+			Log.trace("[2][0]:" + this.board.readSlotNMSize(2, 0));
 
 		if (FlxG.keys.justPressed.NUMPADTWO)
-			Log.trace("[2][1]:" + this.board.readSlotNSize(8));
+			Log.trace("[2][1]:" + this.board.readSlotNMSize(2, 1));
 
 		if (FlxG.keys.justPressed.NUMPADTHREE)
-			Log.trace("[2][2]:" + this.board.readSlotNSize(9));
+			Log.trace("[2][2]:" + this.board.readSlotNMSize(2, 2));
 	}
 
 	public function logArray3D(_array:Array<Array<Array<Int>>>)
@@ -228,5 +256,38 @@ class PlayState extends FlxState
 		{
 			Log.trace(i + ":" + _array[i]);
 		}
+	}
+
+	function checkWin(_board)
+	{
+		// Check rows
+		for (i in 0...3)
+		{
+			if (_board[i][0] == _board[i][1] && _board[i][1] == _board[i][2])
+			{
+				return _board[i][0];
+			}
+		}
+
+		// Check columns
+		for (i in 0...3)
+		{
+			if (_board[0][i] == _board[1][i] && _board[1][i] == _board[2][i])
+			{
+				return _board[0][i];
+			}
+		}
+
+		// Check diagonals
+		if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2])
+		{
+			return _board[0][0];
+		}
+		if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0])
+		{
+			return _board[0][2];
+		}
+
+		return -1;
 	}
 }

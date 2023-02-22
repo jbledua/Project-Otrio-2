@@ -72,7 +72,7 @@ class Slot extends FlxSprite
 		makeGraphic(_width, _height, FlxColor.CYAN);
 	}
 
-	public function readPieces():FlxTypedGroup<Piece>
+	public function getPiecesOnSlot():FlxTypedGroup<Piece>
 	{
 		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
 
@@ -92,7 +92,7 @@ class Slot extends FlxSprite
 		}
 
 		return _pieces;
-	} // End readPieces
+	} // End getPiecesOnSlot
 
 	public function readPiecesByRef(_pieces:FlxTypedGroup<Piece>)
 	{
@@ -114,13 +114,13 @@ class Slot extends FlxSprite
 		}
 
 		return _pieces;
-	} // End readPieces
+	} // End getPiecesOnSlo
 
 	public function hasSpace(_size:Int):Bool
 	{
 		var _space:Bool = true;
 		var _foundCount:Int = 0;
-		var _onPieces:FlxTypedGroup<Piece> = this.readPieces();
+		var _onPieces:FlxTypedGroup<Piece> = this.getPiecesOnSlot();
 
 		for (i in 0..._onPieces.length)
 		{
@@ -203,7 +203,7 @@ class Slot extends FlxSprite
 			{
 				for (j in 0...this.slotPieces.length)
 				{
-					if (FlxG.mouse.overlaps(this.slotPieces.members[j]))
+					if ((FlxG.mouse.overlaps(this.slotPieces.members[j])) && this.slotPieces.members[j].isPickedup())
 					{
 						this.slotPieces.members[j].onDroped();
 					}
