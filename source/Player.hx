@@ -68,6 +68,11 @@ class Player extends FlxSprite
 		this.colorBackground = _colorBackground;
 	}
 
+	public function getPrimaryColor():FlxColor
+	{
+		return this.colorPrimary;
+	}
+
 	public function getCenter()
 	{
 		// Returns the center point of the player
@@ -186,8 +191,8 @@ class Player extends FlxSprite
 			for (j in 0..._tempPiece.length)
 			{
 				this.playerPieces.add(_tempPiece.members[j]);
-			}
-		}
+			} // End for j
+		} // End for i
 
 		// var _temp1:FlxTypedGroup<Piece> = this.playerSlots.members[0].createPieces(_locked);
 		// var _temp2:FlxTypedGroup<Piece> = this.playerSlots.members[1].createPieces(_locked);
@@ -329,7 +334,7 @@ class Player extends FlxSprite
 		for (i in 0...this.playerPieces.length)
 		{
 			this.playerPieces.members[i].unlock();
-		}
+		} // End for i
 
 		// Log.trace("Pieces on slot 0 " + this.playerSlots.members[0].readPieces().length);
 		// Log.trace("Pieces on slot 1 " + this.playerSlots.members[1].readPieces().length);
@@ -380,7 +385,7 @@ class Player extends FlxSprite
 		for (i in 0...this.playerPieces.length)
 		{
 			this.playerPieces.members[i].lock();
-		}
+		} // End for i
 	}
 
 	public function resetPieces()
@@ -390,7 +395,7 @@ class Player extends FlxSprite
 		for (i in 0...this.playerPieces.length)
 		{
 			this.playerPieces.members[i].resetLocation();
-		}
+		} // End for i
 	}
 
 	override public function update(elapsed:Float)
@@ -423,5 +428,5 @@ class Player extends FlxSprite
 				} // End For loop
 			}
 			// */
-	}
-}
+	} // End update
+} // End Player

@@ -137,7 +137,7 @@ class Piece extends FlxSprite
 
 	public function onClicked()
 	{
-		Log.trace("Clicked");
+		// Log.trace("Clicked");
 		if (!this.locked)
 		{
 			this.pickedUp = true;
@@ -155,7 +155,7 @@ class Piece extends FlxSprite
 
 	public function onDroped()
 	{
-		Log.trace("Dropped");
+		// Log.trace("Dropped");
 
 		this.pickedUp = false;
 

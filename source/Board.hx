@@ -234,9 +234,10 @@ class Board extends FlxSprite
 	}
 
 	//--------------------------------------------------------------------------------------------------------
-	//               Small                               Med                               Large
+	//
+	//           Small Layer[0]                      Med Layer[1]                     Large Layer[2]
 	// | [0][0][0] [0][0][1] [0][0][2] |  | [1][0][0] [1][0][1] [1][0][2] |  | [2][0][0] [2][0][1] [2][0][2] |
-	// | [0][1][0] [0][1][2] [0][1][2] |  | [1][1][0] [1][1][1] [1][1][2] |  | [2][1][0] [2][1][1] [2][1][2] |
+	// | [0][1][0] [0][1][1] [0][1][2] |  | [1][1][0] [1][1][1] [1][1][2] |  | [2][1][0] [2][1][1] [2][1][2] |
 	// | [0][2][0] [0][2][1] [0][2][2] |  | [1][2][0] [1][2][1] [1][2][2] |  | [2][2][0] [2][2][1] [2][2][2] |
 	//--------------------------------------------------------------------------------------------------------
 
@@ -249,12 +250,322 @@ class Board extends FlxSprite
 		_array.push(readLargePieces());
 
 		return _array;
-	}
+	} // End readBoard
 
-	public function readRight():Array<Array<Int>>
+	//--------------------------------------------------------------------------------------------------------
+	//    Right Column of each layer
+	// | [0][0][2] [1][0][2] [2][0][2] |
+	// | [0][1][2] [1][1][2] [2][1][2] |
+	// | [0][2][2] [1][2][2] [2][2][2] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readRightColumns():Array<Array<Int>>
 	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
 		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
 
-		_array[][] = readSlotNMSize(0, 0);
+		_array[0][0] = _board[0][0][2];
+		_array[0][1] = _board[0][1][2];
+		_array[0][2] = _board[0][2][2];
+
+		_array[1][0] = _board[1][0][2];
+		_array[1][1] = _board[1][1][2];
+		_array[1][2] = _board[1][2][2];
+
+		_array[2][0] = _board[2][0][2];
+		_array[2][1] = _board[2][1][2];
+		_array[2][2] = _board[2][2][2];
+
+		return _array;
+	} // readRightColumns
+
+	//--------------------------------------------------------------------------------------------------------
+	//    Middle Column of each layer
+	// | [0][0][1] [1][0][1] [2][0][1] |
+	// | [0][1][1] [1][1][1] [2][1][1] |
+	// | [0][2][1] [1][2][1] [2][2][1] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readMidColumns():Array<Array<Int>>
+	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[0][0] = _board[0][0][1];
+		_array[0][1] = _board[0][1][1];
+		_array[0][2] = _board[0][2][1];
+
+		_array[1][0] = _board[1][0][1];
+		_array[1][1] = _board[1][1][1];
+		_array[1][2] = _board[1][2][1];
+
+		_array[2][0] = _board[2][0][1];
+		_array[2][1] = _board[2][1][1];
+		_array[2][2] = _board[2][2][1];
+
+		return _array;
+	} // readMidColumns
+
+	//--------------------------------------------------------------------------------------------------------
+	//     Left Column of Each Layer
+	// | [0][0][0] [1][0][0] [2][0][0] |
+	// | [0][1][0] [1][1][0] [2][1][0] |
+	// | [0][2][0] [1][2][0] [2][2][0] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readLeftColumns():Array<Array<Int>>
+	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[0][0] = _board[0][0][0];
+		_array[0][1] = _board[0][1][0];
+		_array[0][2] = _board[0][2][0];
+
+		_array[1][0] = _board[1][0][0];
+		_array[1][1] = _board[1][1][0];
+		_array[1][2] = _board[1][2][0];
+
+		_array[2][0] = _board[2][0][0];
+		_array[2][1] = _board[2][1][0];
+		_array[2][2] = _board[2][2][0];
+
+		return _array;
+	} // readLeftColumns
+
+	//--------------------------------------------------------------------------------------------------------
+	//      Top Row of Each Layer
+	// | [0][0][0] [0][0][1] [0][0][2] |
+	// | [1][0][0] [1][0][1] [1][0][2] |
+	// | [2][0][0] [2][0][1] [2][0][2] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readTopRows():Array<Array<Int>>
+	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[0][0] = _board[0][0][0];
+		_array[0][1] = _board[0][0][1];
+		_array[0][2] = _board[0][0][2];
+
+		_array[1][0] = _board[1][0][0];
+		_array[1][1] = _board[1][0][1];
+		_array[1][2] = _board[1][0][2];
+
+		_array[2][0] = _board[2][0][0];
+		_array[2][1] = _board[2][0][1];
+		_array[2][2] = _board[2][0][2];
+
+		return _array;
+	} // End readTopRows
+
+	//--------------------------------------------------------------------------------------------------------
+	//      Middle Row of Each Layer
+	// | [0][1][0] [0][1][1] [0][1][2] |
+	// | [1][1][0] [1][1][1] [1][1][2] |
+	// | [2][1][0] [2][1][1] [2][1][2] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readMidRows():Array<Array<Int>>
+	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[0][0] = _board[0][1][0];
+		_array[0][1] = _board[0][1][1];
+		_array[0][2] = _board[0][1][2];
+
+		_array[1][0] = _board[1][1][0];
+		_array[1][1] = _board[1][1][1];
+		_array[1][2] = _board[1][1][2];
+
+		_array[2][0] = _board[2][1][0];
+		_array[2][1] = _board[2][1][1];
+		_array[2][2] = _board[2][1][2];
+
+		return _array;
+	} // End readMidRows
+
+	//--------------------------------------------------------------------------------------------------------
+	//      Bottom Row of Each Layer
+	// | [0][2][0] [0][2][1] [0][2][2] |
+	// | [1][2][0] [1][2][1] [1][2][2] |
+	// | [2][2][0] [2][2][1] [2][2][2] |
+	//--------------------------------------------------------------------------------------------------------
+
+	public function readBotRows():Array<Array<Int>>
+	{
+		var _board:Array<Array<Array<Int>>> = this.readBoard();
+		var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+
+		_array[0][0] = _board[0][2][0];
+		_array[0][1] = _board[0][2][1];
+		_array[0][2] = _board[0][2][2];
+
+		_array[1][0] = _board[1][2][0];
+		_array[1][1] = _board[1][2][1];
+		_array[1][2] = _board[1][2][2];
+
+		_array[2][0] = _board[2][2][0];
+		_array[2][1] = _board[2][2][1];
+		_array[2][2] = _board[2][2][2];
+
+		return _array;
+	} // End readBotRows
+
+	// //--------------------------------------------------------------------------------------------------------
+	// // Diagonal Columns Left[0] to Right[2]
+	// // | [0][0][0] [1][0][1] [2][0][2] |
+	// // | [0][1][0] [1][1][1] [2][1][2] |
+	// // | [0][2][0] [1][2][1] [2][2][2] |
+	// //--------------------------------------------------------------------------------------------------------
+	// public function readDiagonalLtoR():Array<Array<Int>>
+	// {
+	// 	var _board:Array<Array<Array<Int>>> = this.readBoard();
+	// 	var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+	// 	_array[0][0] = _board[0][0][0];
+	// 	_array[0][1] = _board[0][1][0];
+	// 	_array[0][2] = _board[0][2][0];
+	// 	_array[1][0] = _board[1][0][1];
+	// 	_array[1][1] = _board[1][1][1];
+	// 	_array[1][2] = _board[1][2][1];
+	// 	_array[2][0] = _board[2][0][2];
+	// 	_array[2][1] = _board[2][1][2];
+	// 	_array[2][2] = _board[2][2][2];
+	// 	return _array;
+	// } // readDiagonalLtoR
+	// //--------------------------------------------------------------------------------------------------------
+	// // Diagonal Column Right[2] to Left[0]
+	// // | [0][0][2] [1][0][1] [2][0][0] |
+	// // | [0][1][2] [1][1][1] [2][1][0] |
+	// // | [0][2][2] [1][2][1] [2][2][0] |
+	// //--------------------------------------------------------------------------------------------------------
+	// public function readDiagonalRtoL():Array<Array<Int>>
+	// {
+	// 	var _board:Array<Array<Array<Int>>> = this.readBoard();
+	// 	var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+	// 	_array[0][0] = _board[0][0][2];
+	// 	_array[0][1] = _board[0][1][2];
+	// 	_array[0][2] = _board[0][2][2];
+	// 	_array[1][0] = _board[1][0][1];
+	// 	_array[1][1] = _board[1][1][1];
+	// 	_array[1][2] = _board[1][2][1];
+	// 	_array[2][0] = _board[2][0][0];
+	// 	_array[2][1] = _board[2][1][0];
+	// 	_array[2][2] = _board[2][2][0];
+	// 	return _array;
+	// } // end readDiagonalRtoL
+	// //--------------------------------------------------------------------------------------------------------
+	// // Diagonal Rows Top[2] to Bottom[0]
+	// // | [2][0][0] [2][0][1] [2][0][2] |
+	// // | [1][1][0] [1][1][1] [1][1][2] |
+	// // | [0][2][0] [0][2][1] [0][2][2] |
+	// //--------------------------------------------------------------------------------------------------------
+	// public function readDiagonalTtoB():Array<Array<Int>>
+	// {
+	// 	var _board:Array<Array<Array<Int>>> = this.readBoard();
+	// 	var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+	// 	_array[0][0] = _board[2][0][0];
+	// 	_array[0][1] = _board[2][0][1];
+	// 	_array[0][2] = _board[2][0][2];
+	// 	_array[1][0] = _board[1][1][0];
+	// 	_array[1][1] = _board[1][1][1];
+	// 	_array[1][2] = _board[1][1][2];
+	// 	_array[2][0] = _board[0][2][0];
+	// 	_array[2][1] = _board[0][2][1];
+	// 	_array[2][2] = _board[0][2][2];
+	// 	return _array;
+	// } // end readDiagonalRtoL
+	// //--------------------------------------------------------------------------------------------------------
+	// // Diagonal Rows Bottom[0] to Top[2]
+	// // | [0][0][0] [0][0][1] [0][0][2] |
+	// // | [1][1][0] [1][1][1] [1][1][2] |
+	// // | [2][2][0] [2][2][1] [2][2][2] |
+	// //--------------------------------------------------------------------------------------------------------
+	// public function readDiagonalBtoT():Array<Array<Int>>
+	// {
+	// 	var _board:Array<Array<Array<Int>>> = this.readBoard();
+	// 	var _array:Array<Array<Int>> = [[-1, -1, -1], [-1, -1, -1], [-1, -1, -1]];
+	// 	_array[0][0] = _board[0][0][0];
+	// 	_array[0][1] = _board[0][0][1];
+	// 	_array[0][2] = _board[0][0][2];
+	// 	_array[1][0] = _board[1][1][0];
+	// 	_array[1][1] = _board[1][1][1];
+	// 	_array[1][2] = _board[1][1][2];
+	// 	_array[2][0] = _board[2][2][0];
+	// 	_array[2][1] = _board[2][2][1];
+	// 	_array[2][2] = _board[2][2][2];
+	// 	return _array;
+	// } // end readDiagonalRtoL
+
+	private function checkWin2d(_board)
+	{
+		// Check rows
+		for (i in 0...3)
+		{
+			if (_board[i][0] == _board[i][1] && _board[i][1] == _board[i][2])
+			{
+				return _board[i][0];
+			}
+		}
+
+		// Check columns
+		for (i in 0...3)
+		{
+			if (_board[0][i] == _board[1][i] && _board[1][i] == _board[2][i])
+			{
+				return _board[0][i];
+			}
+		}
+
+		// Check diagonals
+		if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2])
+		{
+			return _board[0][0];
+		}
+		if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0])
+		{
+			return _board[0][2];
+		}
+
+		return -1;
+	} // End checkWin2d
+
+	public function checkWin():Int
+	{
+		var _winner:Int = -1;
+
+		// Check each layer
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readSmallPieces());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readMedPieces());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readLargePieces());
+
+		//	 Check each Row
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readTopRows());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readMidRows());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readBotRows());
+
+		//	 Check each Column
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readRightColumns());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readMidColumns());
+
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readLeftColumns());
+
+		return _winner;
 	}
 }

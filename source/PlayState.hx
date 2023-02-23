@@ -5,7 +5,12 @@ import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.input.mouse.FlxMouseEventManager;
+import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
+import flixel.ui.FlxSpriteButton;
+import flixel.util.FlxAxes;
 import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
 import haxe.Log;
 
 class PlayState extends FlxState
@@ -15,7 +20,10 @@ class PlayState extends FlxState
 	private var pieces:FlxTypedGroup<Piece>;
 	private var slots:FlxTypedGroup<Slot>;
 
+	private var endTurnSignal:FlxSignal;
+
 	private var turnIndex:Int = 0;
+	private var turnText:FlxText;
 
 	override public function create()
 	{
@@ -34,12 +42,52 @@ class PlayState extends FlxState
 		// Create Game Peices
 		this.createPeices();
 
+		// Create Turn Text
+		this.createTurnText();
+
+		// Create Next Button
+		this.createNextButton();
+
 		add(this.board);
 		add(this.players);
 		add(this.slots);
 		add(this.pieces);
 
 		this.players.members[this.turnIndex].startTurn();
+	}
+
+	public function createTurnText()
+	{
+		this.turnText = new FlxText(0, 50, 300, "Player " + Std.string(this.turnIndex + 1) + " Turn");
+		this.turnText.screenCenter(FlxAxes.X);
+		this.turnText.setFormat(null, 32, FlxColor.WHITE, FlxTextAlign.CENTER);
+
+		this.updateTurnText();
+
+		add(turnText);
+	}
+
+	public function updateTurnText()
+	{
+		// Update Turn Text
+		this.turnText.text = "Player " + Std.string(this.turnIndex + 1) + " Turn";
+
+		// Update Turn Text Color
+		FlxTween.color(this.turnText, 0.5, FlxColor.WHITE, this.players.members[this.turnIndex].getPrimaryColor());
+	}
+
+	public function createNextButton()
+	{
+		var nextButton:FlxSpriteButton = new FlxSpriteButton(0, 0, null, endTurn);
+		nextButton.scale.set(5, 5);
+
+		nextButton.screenCenter();
+		nextButton.x += 200 + nextButton.width / 2;
+		nextButton.y += 200 + nextButton.height / 2;
+
+		nextButton.loadGraphic('assets/images/green-next.png', true, 16, 16);
+
+		add(nextButton);
 	}
 
 	public function createBoard()
@@ -60,6 +108,9 @@ class PlayState extends FlxState
 	public function createPlayers()
 	{
 		// This function could be impoved using for loops but it works for now
+
+		endTurnSignal = new FlxSignal();
+		endTurnSignal.add(onEndTurn);
 
 		// Instantiate Player Variables
 		this.players = new FlxTypedGroup<Player>(4); // Max of Players Players
@@ -137,20 +188,41 @@ class PlayState extends FlxState
 
 	public function endTurn()
 	{
-		// FOR TESTING
-		// Log.trace("Player " + this.turnIndex);
-
 		// End Current turn
 		this.players.members[this.turnIndex].endTurn();
 
-		// Increment turnIndex and loop
-		if (this.turnIndex < this.players.length - 1)
-			this.turnIndex++;
-		else
-			this.turnIndex = 0;
+		endTurnSignal.dispatch();
 
-		// Start Next turn
-		this.players.members[this.turnIndex].startTurn();
+		// // Increment turnIndex and loop
+		// if (this.turnIndex < this.players.length - 1)
+		// 	this.turnIndex++;
+		// else
+		// 	this.turnIndex = 0;
+
+		// // Start Next turn
+		// this.players.members[this.turnIndex].startTurn();
+	}
+
+	public function onEndTurn()
+	{
+		if (this.board.checkWin() != -1)
+		{
+			Log.trace("Winner: " + this.board.checkWin());
+		}
+		else
+		{
+			// Increment turnIndex and loop
+			if (this.turnIndex < this.players.length - 1)
+				this.turnIndex++;
+			else
+				this.turnIndex = 0;
+
+			// Start Next turn
+			this.players.members[this.turnIndex].startTurn();
+
+			// Update turn text
+			this.updateTurnText();
+		}
 	}
 
 	override public function update(elapsed:Float)
@@ -158,6 +230,16 @@ class PlayState extends FlxState
 		super.update(elapsed);
 
 		var _winner:Int = -1;
+
+		if (FlxG.keys.justPressed.C)
+		{
+			_winner = this.board.checkWin();
+
+			if (_winner == -1)
+				Log.trace("No Winner");
+			else
+				Log.trace("Winner: " + _winner);
+		}
 
 		if (FlxG.keys.justPressed.N)
 		{

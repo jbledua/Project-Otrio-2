@@ -69,7 +69,7 @@ class Slot extends FlxSprite
 		var _height = 50;
 
 		// Replace with Board Graphic
-		makeGraphic(_width, _height, FlxColor.CYAN);
+		makeGraphic(_width, _height, FlxColor.TRANSPARENT);
 	}
 
 	public function getPiecesOnSlot():FlxTypedGroup<Piece>
