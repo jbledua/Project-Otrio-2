@@ -158,6 +158,7 @@ class Piece extends FlxSprite
 		// Log.trace("Dropped");
 
 		this.pickedUp = false;
+		var _slotFound:Bool = false;
 
 		for (i in 0...this.slots.length)
 		{
@@ -167,6 +168,7 @@ class Piece extends FlxSprite
 				if (this.slots.members[i].hasSpace(this.getPiecesSize()))
 				{
 					this.moveTo(this.slots.members[i].getCenter());
+					_slotFound = true;
 				}
 				else
 				{
@@ -176,6 +178,14 @@ class Piece extends FlxSprite
 						this.moveToStart();
 					}
 				}
+			}
+		} // End For i
+
+		if (!_slotFound)
+		{
+			if (!this.isLocked())
+			{
+				this.moveToStart();
 			}
 		}
 	}

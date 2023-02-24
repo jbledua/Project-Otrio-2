@@ -3,6 +3,7 @@ import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
 import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
 import haxe.Log;
 
 class Player extends FlxSprite
@@ -10,8 +11,10 @@ class Player extends FlxSprite
 	public static inline var VERTICAL:Int = 0;
 	public static inline var HORIZONTAL:Int = 1;
 
+	private var board:Board; // Global Board
 	private var pieces:FlxTypedGroup<Piece>; // Global Group of all Pieces
 	private var slots:FlxTypedGroup<Slot>; // Global Group of all Slots
+	private var players:FlxTypedGroup<Player>; // Global Group of all Players
 
 	private var playerPieces:FlxTypedGroup<Piece>; // Local Group of Pieces that belong to the player
 	private var playerSlots:FlxTypedGroup<Slot>; // Local Group of Slots that belong to the player
@@ -23,6 +26,30 @@ class Player extends FlxSprite
 	private var colorPrimary:FlxColor = FlxColor.fromHSB(0, 0, 0.75, 1);
 	private var colorDark:FlxColor = FlxColor.fromHSB(0, 0, 0.5, 1);
 	private var colorBackground:FlxColor = FlxColor.fromHSB(0, 0, 0.25, 1);
+
+	private var endTurnSignal:FlxSignal;
+
+	// Setters and Getters
+	public function setBoard(_board:Board)
+	{
+		this.board = _board;
+	}
+
+	public function getBoard():Board
+	{
+		return this.board;
+	}
+
+	// Player
+	public function setPlayer(_players:FlxTypedGroup<Player>)
+	{
+		this.players = _players;
+	}
+
+	public function getPlayer():FlxTypedGroup<Player>
+	{
+		return this.players;
+	}
 
 	// Constructor
 	public function new(_x:Float = 0, _y:Float = 0)
@@ -60,6 +87,11 @@ class Player extends FlxSprite
 		return this.type;
 	}
 
+	public function setTurnSignal(signal:FlxSignal)
+	{
+		this.endTurnSignal = signal;
+	}
+
 	public function setColors(_colorLight:FlxColor, _colorPrimary:FlxColor, _colorDark:FlxColor, _colorBackground:FlxColor)
 	{
 		this.colorLight = _colorLight;
@@ -77,6 +109,57 @@ class Player extends FlxSprite
 	{
 		// Returns the center point of the player
 		return new FlxPoint(this.x + Std.int(this.width / 2), this.y + Std.int(this.height / 2));
+	}
+
+	// Get Player Pieces
+	public function getPlayerPieces():FlxTypedGroup<Piece>
+	{
+		return this.playerPieces;
+	}
+
+	// Get Pieces on Slots
+	public function getPiecesOnSlots():FlxTypedGroup<Piece>
+	{
+		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+
+		// Loop through all the slots
+		for (i in 0...this.playerSlots.length)
+		{
+			var _temp:FlxTypedGroup<Piece> = this.playerSlots.members[i].getPiecesOnSlot();
+
+			Log.trace("Slot " + i + " has " + _temp.length + " pieces");
+			// If the slot has a piece
+			if (_temp != null)
+			{
+				// Loop through all the pieces on the slot
+				for (j in 0..._temp.length)
+				{
+					// Add the piece to the group
+					_pieces.add(_temp.members[j]);
+				}
+			}
+		}
+
+		return _pieces;
+	}
+
+	// Get Pieces on slots are of size n
+	public function getPiecesOnSlotsOfSize(n:Int):FlxTypedGroup<Piece>
+	{
+		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+		var _piecesOnSlot:FlxTypedGroup<Piece> = this.getPiecesOnSlots();
+
+		// Log.trace("Plength: " + _piecesOnSlot.length);
+
+		for (i in 0..._piecesOnSlot.length)
+		{
+			if (_piecesOnSlot.members[i].getPiecesSize() == n)
+			{
+				_pieces.add(_piecesOnSlot.members[i]);
+			}
+		}
+
+		return _pieces;
 	}
 
 	public function create(?_slots:FlxTypedGroup<Slot>, ?_slots:FlxTypedGroup<Slot>)
@@ -386,6 +469,8 @@ class Player extends FlxSprite
 		{
 			this.playerPieces.members[i].lock();
 		} // End for i
+
+		this.endTurnSignal.dispatch();
 	}
 
 	public function resetPieces()

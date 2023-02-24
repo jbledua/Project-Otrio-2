@@ -124,6 +124,18 @@ class Board extends FlxSprite
 		this.slots.add(this.boardSlots.members[8]);
 	} // End createSlots
 
+	// Get slot at position n, m
+	public function getSlotNM(_n:Int, _m:Int):Slot
+	{
+		if (this.boardSlots != null)
+		{
+			if ((_n * 3 + _m) < this.slots.length)
+				return this.slots.members[_n * 3 + _m];
+		}
+
+		return null;
+	}
+
 	public function readSlotNMSize(_n:Int, _m:Int):Array<Int>
 	{
 		var _pieceSize:Array<Int> = [];
@@ -499,7 +511,7 @@ class Board extends FlxSprite
 	// 	return _array;
 	// } // end readDiagonalRtoL
 
-	private function checkWin2d(_board)
+	public function checkWin2d(_board)
 	{
 		// Check rows
 		for (i in 0...3)
@@ -536,15 +548,15 @@ class Board extends FlxSprite
 	{
 		var _winner:Int = -1;
 
-		// Check each layer
-		if (_winner == -1)
-			_winner = this.checkWin2d(this.readSmallPieces());
+		// // Check each layer
+		// if (_winner == -1)
+		// 	_winner = this.checkWin2d(this.readSmallPieces());
 
-		if (_winner == -1)
-			_winner = this.checkWin2d(this.readMedPieces());
+		// if (_winner == -1)
+		// 	_winner = this.checkWin2d(this.readMedPieces());
 
-		if (_winner == -1)
-			_winner = this.checkWin2d(this.readLargePieces());
+		// if (_winner == -1)
+		// 	_winner = this.checkWin2d(this.readLargePieces());
 
 		//	 Check each Row
 		if (_winner == -1)

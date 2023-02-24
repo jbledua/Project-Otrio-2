@@ -85,6 +85,8 @@ class Slot extends FlxSprite
 					_pieces.add(this.pieces.members[i]);
 				}
 			}
+
+			// Log.trace("Slot Piece Length: " + _pieces.length);
 		}
 		else
 		{

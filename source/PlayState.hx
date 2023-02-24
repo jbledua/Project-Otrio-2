@@ -25,6 +25,9 @@ class PlayState extends FlxState
 	private var turnIndex:Int = 0;
 	private var turnText:FlxText;
 
+	var nextButton:FlxSpriteButton;
+	var resetButton:FlxSpriteButton;
+
 	override public function create()
 	{
 		super.create();
@@ -42,18 +45,48 @@ class PlayState extends FlxState
 		// Create Game Peices
 		this.createPeices();
 
+		// Sort Pieces by Size
+		this.sortPieces(this.pieces);
+
 		// Create Turn Text
 		this.createTurnText();
 
 		// Create Next Button
 		this.createNextButton();
 
+		// Create Reset Button
+		this.createResetButton();
+
 		add(this.board);
 		add(this.players);
 		add(this.slots);
+
+		// FOR TESTING: Draw Lines of Board
+		this.drawBoard();
+
 		add(this.pieces);
 
+		// Start turn of Player 0
 		this.players.members[this.turnIndex].startTurn();
+	}
+
+	public function sortPieces(_group:FlxTypedGroup<Piece>)
+	{
+		_group.members.sort(function(a:Piece, b:Piece):Int
+		{
+			if (a.getPiecesSize() > b.getPiecesSize())
+			{
+				return -1;
+			}
+			else if (a.getPiecesSize() < b.getPiecesSize())
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		});
 	}
 
 	public function createTurnText()
@@ -78,16 +111,43 @@ class PlayState extends FlxState
 
 	public function createNextButton()
 	{
-		var nextButton:FlxSpriteButton = new FlxSpriteButton(0, 0, null, endTurn);
-		nextButton.scale.set(5, 5);
+		this.nextButton = new FlxSpriteButton(0, 0, null, onNextButton);
+		this.nextButton.makeGraphic(50, 50, FlxColor.WHITE);
+		// nextButton.scale.set(5, 5);
 
-		nextButton.screenCenter();
-		nextButton.x += 200 + nextButton.width / 2;
-		nextButton.y += 200 + nextButton.height / 2;
+		this.nextButton.screenCenter();
+		this.nextButton.x += 200;
+		this.nextButton.y += 200;
 
-		nextButton.loadGraphic('assets/images/green-next.png', true, 16, 16);
+		// nextButton.loadGraphic('assets/images/green-next.png', true, 16, 16);
 
-		add(nextButton);
+		add(this.nextButton);
+	}
+
+	public function onNextButton()
+	{
+		// Log.trace("Next Button Pressed");
+
+		FlxTween.color(this.nextButton, 0.125, FlxColor.GRAY, FlxColor.WHITE);
+		endTurn();
+	}
+
+	public function createResetButton()
+	{
+		resetButton = new FlxSpriteButton(0, 0, null, onResetButton);
+		resetButton.makeGraphic(50, 50, FlxColor.WHITE);
+
+		resetButton.screenCenter();
+		resetButton.x -= 200;
+		resetButton.y += 200;
+
+		add(resetButton);
+	}
+
+	public function onResetButton()
+	{
+		FlxTween.color(this.resetButton, 0.125, FlxColor.GRAY, FlxColor.WHITE);
+		this.players.members[this.turnIndex].resetPieces();
 	}
 
 	public function createBoard()
@@ -116,10 +176,21 @@ class PlayState extends FlxState
 		this.players = new FlxTypedGroup<Player>(4); // Max of Players Players
 
 		// Instantiate Player Variables
-		this.players.add(new Player());
-		this.players.add(new Player());
-		this.players.add(new Player());
-		this.players.add(new Player());
+		this.players.add(new PlayerAI());
+		this.players.add(new PlayerAI());
+		this.players.add(new PlayerAI());
+		this.players.add(new PlayerAI());
+
+		// Set Player Board
+		this.players.members[0].setBoard(this.board);
+		this.players.members[1].setBoard(this.board);
+		this.players.members[2].setBoard(this.board);
+		this.players.members[3].setBoard(this.board);
+
+		this.players.members[0].setPlayer(this.players);
+		this.players.members[1].setPlayer(this.players);
+		this.players.members[2].setPlayer(this.players);
+		this.players.members[3].setPlayer(this.players);
 
 		// Set Player Orenetation
 		this.players.members[0].setType(Player.VERTICAL);
@@ -148,6 +219,12 @@ class PlayState extends FlxState
 		this.players.members[1].create();
 		this.players.members[2].create();
 		this.players.members[3].create();
+
+		// Set Player End Turn Signal
+		this.players.members[0].setTurnSignal(this.endTurnSignal);
+		this.players.members[1].setTurnSignal(this.endTurnSignal);
+		this.players.members[2].setTurnSignal(this.endTurnSignal);
+		this.players.members[3].setTurnSignal(this.endTurnSignal);
 
 		// Move Players to Proper Places
 		this.players.members[0].screenCenter();
@@ -191,7 +268,7 @@ class PlayState extends FlxState
 		// End Current turn
 		this.players.members[this.turnIndex].endTurn();
 
-		endTurnSignal.dispatch();
+		// endTurnSignal.dispatch();
 
 		// // Increment turnIndex and loop
 		// if (this.turnIndex < this.players.length - 1)
@@ -208,6 +285,8 @@ class PlayState extends FlxState
 		if (this.board.checkWin() != -1)
 		{
 			Log.trace("Winner: " + this.board.checkWin());
+
+			FlxG.switchState(new GameOverState(this.turnIndex + 1, this.players.members[this.turnIndex].getPrimaryColor()));
 		}
 		else
 		{
@@ -231,6 +310,11 @@ class PlayState extends FlxState
 
 		var _winner:Int = -1;
 
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			FlxG.switchState(new GameOverState(this.turnIndex, this.players.members[this.turnIndex].getPrimaryColor()));
+		}
+
 		if (FlxG.keys.justPressed.C)
 		{
 			_winner = this.board.checkWin();
@@ -246,44 +330,70 @@ class PlayState extends FlxState
 			this.endTurn();
 		}
 
+		var _pieces:FlxTypedGroup<Piece>;
+
 		if (FlxG.keys.justPressed.ONE)
 		{
-			Log.trace("Small Pieces");
-			// this.logArray2D(this.board.readSmallPieces());
-
-			_winner = this.checkWin(this.board.readSmallPieces());
-
-			if (_winner == -1)
-				Log.trace("No Winner");
-			else
-				Log.trace("Winner: " + _winner);
+			_pieces = this.players.members[0].getPiecesOnSlots();
+			Log.trace("Player Piece Length: " + _pieces.length);
 		}
 
 		if (FlxG.keys.justPressed.TWO)
 		{
-			Log.trace("Med Pieces");
-			// this.logArray2D(this.board.readMedPieces());
-
-			_winner = this.checkWin(this.board.readMedPieces());
-
-			if (_winner == -1)
-				Log.trace("No Winner");
-			else
-				Log.trace("Winner: " + _winner);
+			_pieces = this.players.members[1].getPiecesOnSlots();
+			Log.trace("Player Piece Length: " + _pieces.length);
 		}
 
 		if (FlxG.keys.justPressed.THREE)
 		{
-			Log.trace("Large Pieces");
-			// this.logArray2D(this.board.readLargePieces());
-
-			_winner = this.checkWin(this.board.readLargePieces());
-
-			if (_winner == -1)
-				Log.trace("No Winner");
-			else
-				Log.trace("Winner: " + _winner);
+			_pieces = this.players.members[2].getPiecesOnSlots();
+			Log.trace("Player Piece Length: " + _pieces.length);
 		}
+
+		if (FlxG.keys.justPressed.FOUR)
+		{
+			_pieces = this.players.members[3].getPiecesOnSlots();
+			Log.trace("Player Piece Length: " + _pieces.length);
+		}
+
+		// if (FlxG.keys.justPressed.ONE)
+		// {
+		// 	Log.trace("Small Pieces");
+		// 	// this.logArray2D(this.board.readSmallPieces());
+
+		// 	_winner = this.checkWin(this.board.readSmallPieces());
+
+		// 	if (_winner == -1)
+		// 		Log.trace("No Winner");
+		// 	else
+		// 		Log.trace("Winner: " + _winner);
+		// }
+
+		// if (FlxG.keys.justPressed.TWO)
+		// {
+		// 	Log.trace("Med Pieces");
+		// 	// this.logArray2D(this.board.readMedPieces());
+
+		// 	_winner = this.checkWin(this.board.readMedPieces());
+
+		// 	if (_winner == -1)
+		// 		Log.trace("No Winner");
+		// 	else
+		// 		Log.trace("Winner: " + _winner);
+		// }
+
+		// if (FlxG.keys.justPressed.THREE)
+		// {
+		// 	Log.trace("Large Pieces");
+		// 	// this.logArray2D(this.board.readLargePieces());
+
+		// 	_winner = this.checkWin(this.board.readLargePieces());
+
+		// 	if (_winner == -1)
+		// 		Log.trace("No Winner");
+		// 	else
+		// 		Log.trace("Winner: " + _winner);
+		// }
 
 		if (FlxG.keys.justPressed.R)
 		{
@@ -372,4 +482,32 @@ class PlayState extends FlxState
 
 		return -1;
 	}
+
+	public function drawBoard()
+	{
+		// Center Horizontal
+		var _line1:FlxSprite = new FlxSprite();
+		_line1.makeGraphic(250, 5, FlxColor.BLACK);
+		_line1.screenCenter();
+		_line1.y = _line1.y + 50;
+		add(_line1);
+
+		var _line2:FlxSprite = new FlxSprite();
+		_line2.makeGraphic(250, 5, FlxColor.BLACK);
+		_line2.screenCenter();
+		_line2.y = _line2.y - 50;
+		add(_line2);
+
+		var _line3:FlxSprite = new FlxSprite();
+		_line3.makeGraphic(5, 250, FlxColor.BLACK);
+		_line3.screenCenter();
+		_line3.x = _line3.x + 50;
+		add(_line3);
+
+		var _line4:FlxSprite = new FlxSprite();
+		_line4.makeGraphic(5, 250, FlxColor.BLACK);
+		_line4.screenCenter();
+		_line4.x = _line4.x - 50;
+		add(_line4);
+	} // End drawBoard
 }
