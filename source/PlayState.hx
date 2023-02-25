@@ -23,8 +23,9 @@ class PlayState extends FlxState
 	private var endTurnSignal:FlxSignal;
 
 	private var turnIndex:Int = 0;
-	private var turnText:FlxText;
 
+	// UI Elements
+	private var turnText:FlxText;
 	var nextButton:FlxSpriteButton;
 	var resetButton:FlxSpriteButton;
 
@@ -113,25 +114,22 @@ class PlayState extends FlxState
 	{
 		this.nextButton = new FlxSpriteButton(0, 0, null, onNextButton);
 		this.nextButton.makeGraphic(50, 50, FlxColor.WHITE);
-		// nextButton.scale.set(5, 5);
 
 		this.nextButton.screenCenter();
 		this.nextButton.x += 200;
 		this.nextButton.y += 200;
-
-		// nextButton.loadGraphic('assets/images/green-next.png', true, 16, 16);
 
 		add(this.nextButton);
 	}
 
 	public function onNextButton()
 	{
-		// Log.trace("Next Button Pressed");
-
 		FlxTween.color(this.nextButton, 0.125, FlxColor.GRAY, FlxColor.WHITE);
 		endTurn();
 	}
 
+	// Reset Button Function
+	// Create Reset Button
 	public function createResetButton()
 	{
 		resetButton = new FlxSpriteButton(0, 0, null, onResetButton);
@@ -144,6 +142,7 @@ class PlayState extends FlxState
 		add(resetButton);
 	}
 
+	// Handle Reset Button Press
 	public function onResetButton()
 	{
 		FlxTween.color(this.resetButton, 0.125, FlxColor.GRAY, FlxColor.WHITE);
@@ -284,9 +283,11 @@ class PlayState extends FlxState
 	{
 		if (this.board.checkWin() != -1)
 		{
+			Log.trace(this.board.readBoard());
 			Log.trace("Winner: " + this.board.checkWin());
 
-			FlxG.switchState(new GameOverState(this.turnIndex + 1, this.players.members[this.turnIndex].getPrimaryColor()));
+			openSubState(new GameOverState(this.turnIndex + 1, this.players.members[this.turnIndex].getPrimaryColor()));
+			// FlxG.switchState(new GameOverState(this.turnIndex + 1, this.players.members[this.turnIndex].getPrimaryColor()));
 		}
 		else
 		{
@@ -302,7 +303,7 @@ class PlayState extends FlxState
 			// Update turn text
 			this.updateTurnText();
 		}
-	}
+	} // End onEndTurn
 
 	override public function update(elapsed:Float)
 	{
@@ -310,89 +311,50 @@ class PlayState extends FlxState
 
 		var _winner:Int = -1;
 
-		if (FlxG.keys.justPressed.ESCAPE)
-		{
-			FlxG.switchState(new GameOverState(this.turnIndex, this.players.members[this.turnIndex].getPrimaryColor()));
-		}
+		// if (FlxG.keys.justPressed.ESCAPE)
+		// {
+		// 	openSubState(new GameOverState(this.turnIndex + 1, this.players.members[this.turnIndex].getPrimaryColor()));
+		// }
 
-		if (FlxG.keys.justPressed.C)
-		{
-			_winner = this.board.checkWin();
+		// if (FlxG.keys.justPressed.C)
+		// {
+		// 	_winner = this.board.checkWin();
 
-			if (_winner == -1)
-				Log.trace("No Winner");
-			else
-				Log.trace("Winner: " + _winner);
-		}
+		// 	if (_winner == -1)
+		// 		Log.trace("No Winner");
+		// 	else
+		// 		Log.trace("Winner: " + _winner);
+		// }
 
 		if (FlxG.keys.justPressed.N)
 		{
 			this.endTurn();
 		}
 
-		var _pieces:FlxTypedGroup<Piece>;
-
-		if (FlxG.keys.justPressed.ONE)
-		{
-			_pieces = this.players.members[0].getPiecesOnSlots();
-			Log.trace("Player Piece Length: " + _pieces.length);
-		}
-
-		if (FlxG.keys.justPressed.TWO)
-		{
-			_pieces = this.players.members[1].getPiecesOnSlots();
-			Log.trace("Player Piece Length: " + _pieces.length);
-		}
-
-		if (FlxG.keys.justPressed.THREE)
-		{
-			_pieces = this.players.members[2].getPiecesOnSlots();
-			Log.trace("Player Piece Length: " + _pieces.length);
-		}
-
-		if (FlxG.keys.justPressed.FOUR)
-		{
-			_pieces = this.players.members[3].getPiecesOnSlots();
-			Log.trace("Player Piece Length: " + _pieces.length);
-		}
+		// var _pieces:FlxTypedGroup<Piece>;
 
 		// if (FlxG.keys.justPressed.ONE)
 		// {
-		// 	Log.trace("Small Pieces");
-		// 	// this.logArray2D(this.board.readSmallPieces());
-
-		// 	_winner = this.checkWin(this.board.readSmallPieces());
-
-		// 	if (_winner == -1)
-		// 		Log.trace("No Winner");
-		// 	else
-		// 		Log.trace("Winner: " + _winner);
+		// 	_pieces = this.players.members[0].getPiecesOnSlots();
+		// 	Log.trace("Player Piece Length: " + _pieces.length);
 		// }
 
 		// if (FlxG.keys.justPressed.TWO)
 		// {
-		// 	Log.trace("Med Pieces");
-		// 	// this.logArray2D(this.board.readMedPieces());
-
-		// 	_winner = this.checkWin(this.board.readMedPieces());
-
-		// 	if (_winner == -1)
-		// 		Log.trace("No Winner");
-		// 	else
-		// 		Log.trace("Winner: " + _winner);
+		// 	_pieces = this.players.members[1].getPiecesOnSlots();
+		// 	Log.trace("Player Piece Length: " + _pieces.length);
 		// }
 
 		// if (FlxG.keys.justPressed.THREE)
 		// {
-		// 	Log.trace("Large Pieces");
-		// 	// this.logArray2D(this.board.readLargePieces());
+		// 	_pieces = this.players.members[2].getPiecesOnSlots();
+		// 	Log.trace("Player Piece Length: " + _pieces.length);
+		// }
 
-		// 	_winner = this.checkWin(this.board.readLargePieces());
-
-		// 	if (_winner == -1)
-		// 		Log.trace("No Winner");
-		// 	else
-		// 		Log.trace("Winner: " + _winner);
+		// if (FlxG.keys.justPressed.FOUR)
+		// {
+		// 	_pieces = this.players.members[3].getPiecesOnSlots();
+		// 	Log.trace("Player Piece Length: " + _pieces.length);
 		// }
 
 		if (FlxG.keys.justPressed.R)
@@ -400,88 +362,83 @@ class PlayState extends FlxState
 			this.players.members[this.turnIndex].resetPieces();
 		}
 
-		if (FlxG.keys.justPressed.B)
-		{
-			this.logArray3D(this.board.readBoard());
-		}
+		// if (FlxG.keys.justPressed.B)
+		// {
+		// 	this.logArray3D(this.board.readBoard());
+		// }
 
-		if (FlxG.keys.justPressed.NUMPADSEVEN)
-			Log.trace("[0][0]:" + this.board.readSlotNMSize(0, 0));
+		// if (FlxG.keys.justPressed.NUMPADSEVEN)
+		// 	Log.trace("[0][0]:" + this.board.readSlotNMSize(0, 0));
 
-		if (FlxG.keys.justPressed.NUMPADEIGHT)
-			Log.trace("[0][1]:" + this.board.readSlotNMSize(0, 1));
+		// if (FlxG.keys.justPressed.NUMPADEIGHT)
+		// 	Log.trace("[0][1]:" + this.board.readSlotNMSize(0, 1));
 
-		if (FlxG.keys.justPressed.NUMPADNINE)
-			Log.trace("[0][2]:" + this.board.readSlotNMSize(0, 2));
+		// if (FlxG.keys.justPressed.NUMPADNINE)
+		// 	Log.trace("[0][2]:" + this.board.readSlotNMSize(0, 2));
 
-		if (FlxG.keys.justPressed.NUMPADFOUR)
-			Log.trace("[1][0]:" + this.board.readSlotNMSize(1, 0));
+		// if (FlxG.keys.justPressed.NUMPADFOUR)
+		// 	Log.trace("[1][0]:" + this.board.readSlotNMSize(1, 0));
 
-		if (FlxG.keys.justPressed.NUMPADFIVE)
-			Log.trace("[1][1]:" + this.board.readSlotNMSize(1, 1));
+		// if (FlxG.keys.justPressed.NUMPADFIVE)
+		// 	Log.trace("[1][1]:" + this.board.readSlotNMSize(1, 1));
 
-		if (FlxG.keys.justPressed.NUMPADSIX)
-			Log.trace("[1][2]:" + this.board.readSlotNMSize(1, 2));
+		// if (FlxG.keys.justPressed.NUMPADSIX)
+		// 	Log.trace("[1][2]:" + this.board.readSlotNMSize(1, 2));
 
-		if (FlxG.keys.justPressed.NUMPADONE)
-			Log.trace("[2][0]:" + this.board.readSlotNMSize(2, 0));
+		// if (FlxG.keys.justPressed.NUMPADONE)
+		// 	Log.trace("[2][0]:" + this.board.readSlotNMSize(2, 0));
 
-		if (FlxG.keys.justPressed.NUMPADTWO)
-			Log.trace("[2][1]:" + this.board.readSlotNMSize(2, 1));
+		// if (FlxG.keys.justPressed.NUMPADTWO)
+		// 	Log.trace("[2][1]:" + this.board.readSlotNMSize(2, 1));
 
-		if (FlxG.keys.justPressed.NUMPADTHREE)
-			Log.trace("[2][2]:" + this.board.readSlotNMSize(2, 2));
+		// if (FlxG.keys.justPressed.NUMPADTHREE)
+		// 	Log.trace("[2][2]:" + this.board.readSlotNMSize(2, 2));
 	}
 
-	public function logArray3D(_array:Array<Array<Array<Int>>>)
-	{
-		for (i in 0..._array.length)
-		{
-			Log.trace("Board " + i);
-			this.logArray2D(_array[i]);
-		}
-	}
-
-	public function logArray2D(_array:Array<Array<Int>>)
-	{
-		for (i in 0..._array.length)
-		{
-			Log.trace(i + ":" + _array[i]);
-		}
-	}
-
-	function checkWin(_board)
-	{
-		// Check rows
-		for (i in 0...3)
-		{
-			if (_board[i][0] == _board[i][1] && _board[i][1] == _board[i][2])
-			{
-				return _board[i][0];
-			}
-		}
-
-		// Check columns
-		for (i in 0...3)
-		{
-			if (_board[0][i] == _board[1][i] && _board[1][i] == _board[2][i])
-			{
-				return _board[0][i];
-			}
-		}
-
-		// Check diagonals
-		if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2])
-		{
-			return _board[0][0];
-		}
-		if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0])
-		{
-			return _board[0][2];
-		}
-
-		return -1;
-	}
+	// public function logArray3D(_array:Array<Array<Array<Int>>>)
+	// {
+	// 	for (i in 0..._array.length)
+	// 	{
+	// 		Log.trace("Board " + i);
+	// 		this.logArray2D(_array[i]);
+	// 	}
+	// }
+	// public function logArray2D(_array:Array<Array<Int>>)
+	// {
+	// 	for (i in 0..._array.length)
+	// 	{
+	// 		Log.trace(i + ":" + _array[i]);
+	// 	}
+	// }
+	// function checkWin(_board)
+	// {
+	// 	// Check rows
+	// 	for (i in 0...3)
+	// 	{
+	// 		if (_board[i][0] == _board[i][1] && _board[i][1] == _board[i][2])
+	// 		{
+	// 			return _board[i][0];
+	// 		}
+	// 	}
+	// 	// Check columns
+	// 	for (i in 0...3)
+	// 	{
+	// 		if (_board[0][i] == _board[1][i] && _board[1][i] == _board[2][i])
+	// 		{
+	// 			return _board[0][i];
+	// 		}
+	// 	}
+	// 	// Check diagonals
+	// 	if (_board[0][0] == _board[1][1] && _board[1][1] == _board[2][2])
+	// 	{
+	// 		return _board[0][0];
+	// 	}
+	// 	if (_board[0][2] == _board[1][1] && _board[1][1] == _board[2][0])
+	// 	{
+	// 		return _board[0][2];
+	// 	}
+	// 	return -1;
+	// }
 
 	public function drawBoard()
 	{

@@ -120,22 +120,18 @@ class Player extends FlxSprite
 	// Get Pieces on Slots
 	public function getPiecesOnSlots():FlxTypedGroup<Piece>
 	{
-		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(3);
+		var _pieces:FlxTypedGroup<Piece> = new FlxTypedGroup<Piece>(9);
+		var _slotPieces:Array<FlxTypedGroup<Piece>> = [];
 
-		// Loop through all the slots
 		for (i in 0...this.playerSlots.length)
 		{
-			var _temp:FlxTypedGroup<Piece> = this.playerSlots.members[i].getPiecesOnSlot();
+			_slotPieces[i] = this.playerSlots.members[i].getPiecesOnSlot();
 
-			Log.trace("Slot " + i + " has " + _temp.length + " pieces");
-			// If the slot has a piece
-			if (_temp != null)
+			if (_slotPieces[i] != null)
 			{
-				// Loop through all the pieces on the slot
-				for (j in 0..._temp.length)
+				for (j in 0..._slotPieces[i].length)
 				{
-					// Add the piece to the group
-					_pieces.add(_temp.members[j]);
+					_pieces.add(_slotPieces[i].members[j]);
 				}
 			}
 		}

@@ -549,14 +549,14 @@ class Board extends FlxSprite
 		var _winner:Int = -1;
 
 		// // Check each layer
-		// if (_winner == -1)
-		// 	_winner = this.checkWin2d(this.readSmallPieces());
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readSmallPieces());
 
-		// if (_winner == -1)
-		// 	_winner = this.checkWin2d(this.readMedPieces());
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readMedPieces());
 
-		// if (_winner == -1)
-		// 	_winner = this.checkWin2d(this.readLargePieces());
+		if (_winner == -1)
+			_winner = this.checkWin2d(this.readLargePieces());
 
 		//	 Check each Row
 		if (_winner == -1)

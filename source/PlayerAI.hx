@@ -1,4 +1,6 @@
 import flixel.group.FlxGroup;
+import flixel.math.FlxPoint;
+import flixel.tweens.FlxTween;
 import haxe.Log;
 
 class PlayerAI extends Player
@@ -43,28 +45,56 @@ class PlayerAI extends Player
 		var _move:Array<Int> = [-1, -1, -1];
 		var _array:Array<Int> = [-1, -1];
 
+		// Check each layer for the winning move
+		_array = this.bestMove2d(this.board.readLargePieces());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [2, _array[0], _array[1]];
+
+		_array = this.bestMove2d(this.board.readMedPieces());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [1, _array[0], _array[1]];
+
+		_array = this.bestMove2d(this.board.readSmallPieces());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [0, _array[0], _array[1]];
+
+		// Check Columns for the winning move
 		_array = this.bestMove2d(this.board.readRightColumns());
 
-		if (_array[0] != -1)
-		{
-			Log.trace("Right column: " + _array);
+		if ((_array[0] != -1) || (_array[1] != -1))
 			return [_array[0], _array[1], 2];
-		}
 
 		_array = this.bestMove2d(this.board.readMidColumns());
 
-		if (_array[0] != -1)
+		if ((_array[0] != -1) || (_array[1] != -1))
 			return [_array[0], _array[1], 1];
 
 		_array = this.bestMove2d(this.board.readLeftColumns());
 
-		if (_array[0] != -1)
+		if ((_array[0] != -1) || (_array[1] != -1))
 			return [_array[0], _array[1], 0];
 
-		// _array = this.bestMove2d(this.board.readBottomRows());
+		// Check Rows for the winning move
+		_array = this.bestMove2d(this.board.readTopRows());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [_array[0], 2, _array[1]];
+
+		_array = this.bestMove2d(this.board.readMidRows());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [_array[0], 1, _array[1]];
+
+		_array = this.bestMove2d(this.board.readBotRows());
+
+		if ((_array[0] != -1) || (_array[1] != -1))
+			return [_array[0], 0, _array[1]];
 
 		// If no move was found, pick random -1
-		if (_array[0] == -1)
+		if ((_array[0] == -1) && (_array[1] == -1))
 		{
 			Log.trace("No move found. Picking randomly");
 			for (i in 0...3)
@@ -148,7 +178,13 @@ class PlayerAI extends Player
 		var _pieces:FlxTypedGroup<Piece> = this.getPiecesOnSlotsOfSize(_size);
 
 		if ((this.board.getSlotNM(_y, _z) != null) && _pieces.members[0] != null)
+		{
 			_pieces.members[0].moveTo(this.board.getSlotNM(_y, _z).getCenter());
+
+			// var _point:FlxPoint = this.board.getSlotNM(_y, _z).getCenter();
+			// Move Piece to Point
+			// FlxTween.tween(_pieces.members[0], {x: _point.x - Std.int(width / 2), y: _point.y - Std.int(height / 2)}, 0.5);
+		}
 		else
 		{
 			if (_pieces.members[0] == null)

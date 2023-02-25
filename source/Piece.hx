@@ -2,6 +2,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxPoint;
+import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import haxe.Log;
@@ -31,6 +32,7 @@ class Piece extends FlxSprite
 		super(_x, _y);
 	}
 
+	// Getters and Setters
 	public function setParent(_parent:Slot):Void
 	{
 		this.parent = _parent;
@@ -127,8 +129,24 @@ class Piece extends FlxSprite
 	public function moveTo(_point:FlxPoint)
 	{
 		// Move Piece to Point
-		FlxTween.tween(this, {x: _point.x - Std.int(width / 2), y: _point.y - Std.int(height / 2)}, 0.5);
+		FlxTween.tween(this, {x: _point.x - Std.int(width / 2), y: _point.y - Std.int(height / 2)}, 0.5, {
+			type: ONESHOT,
+			ease: FlxEase.quadInOut,
+			// onComplete: onMoveToComplete,
+			startDelay: 0,
+			loopDelay: 0
+		});
 	}
+
+	public function onMoveToComplete(tween:FlxTween):Void
+	{
+		Log.trace("Move to complete");
+	}
+
+	// public function onMoveToComplete()
+	// {
+	// 	Log.trace("Move to complete");
+	// }
 
 	public function moveToStart()
 	{
